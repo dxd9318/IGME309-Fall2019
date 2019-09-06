@@ -113,7 +113,7 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 1.0f, 0.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))										//TODO: ADD COLOR CHANGE FOR PRESSING 4
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))										//TODO: ADD COLOR CHANGE FOR PRESSING 4		//https://learnopengl.com/Getting-started/Shaders
 		m_v3Color = glm::vec3((1.0f - m_v3Color.x), (1.0f - m_v3Color.y), (1.0f - m_v3Color.z));		//doesnt work, complements for 1, 2, 3, gives white for 0					
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
