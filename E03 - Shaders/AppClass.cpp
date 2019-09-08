@@ -113,8 +113,10 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 1.0f, 0.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))										//TODO: ADD COLOR CHANGE FOR PRESSING 4		//https://learnopengl.com/Getting-started/Shaders
-		m_v3Color = glm::vec3((1.0f - m_v3Color.x), (1.0f - m_v3Color.y), (1.0f - m_v3Color.z));		//doesnt work, complements for 1, 2, 3, gives white for 0					
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))		//4. when pressed, complement; when released, not complement.	//https://learnopengl.com/Getting-started/Shaders	//1. MAKE THIS UNIFORM BOOL, SENDS TRUE/FALSE TO FRAGMENT SHADER
+	{
+		m_bComplementOn = true;
+	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
 }
@@ -126,6 +128,8 @@ void AppClass::Display(void)
 	//read uniforms and send values
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
 	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
+	GLuint ComplementOn = glGetUniformLocation(m_uShaderProgramID, "ComplementOn");				//2. LINK UNIFORM FROM BUTTON 4 HERE TO CORRESPONDING VAR IN SHADER FILE
+	glUniform1i(ComplementOn, m_bComplementOn);
 
 	//draw content
 	glDrawArrays(GL_TRIANGLES, 0, 3);
