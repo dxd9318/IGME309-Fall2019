@@ -113,9 +113,10 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 1.0f, 0.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))		//4. when pressed, complement; when released, not complement.	//https://learnopengl.com/Getting-started/Shaders	//1. MAKE THIS UNIFORM BOOL, SENDS TRUE/FALSE TO FRAGMENT SHADER
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))		//4. when pressed, complement; when released, not complement.	//https://learnopengl.com/Getting-started/Shaders	
 	{
-		m_bComplementOn = true;
+		m_bComplementOn = !m_bComplementOn;										//1. MAKE THIS UNIFORM BOOL, SENDS TRUE/FALSE TO FRAGMENT SHADER
+		
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
@@ -128,7 +129,7 @@ void AppClass::Display(void)
 	//read uniforms and send values
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
 	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
-	GLuint ComplementOn = glGetUniformLocation(m_uShaderProgramID, "ComplementOn");				//2. LINK UNIFORM FROM BUTTON 4 HERE TO CORRESPONDING VAR IN SHADER FILE
+	GLuint ComplementOn = glGetUniformLocation(m_uShaderProgramID, "ComplementOn");				//2. LINK UNIFORM FROM BUTTON 4 HERE TO CORRESPONDING VAR IN SHADER FILE	//khronos.org/registry/OpenGL-Refpages/gl4/html/glUniform.xhtml	//according to this, should use GLuint for bool
 	glUniform1i(ComplementOn, m_bComplementOn);
 
 	//draw content
