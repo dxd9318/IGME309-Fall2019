@@ -1,6 +1,6 @@
 /*----------------------------------------------
-Programmer: Alberto Bobadilla (labigm@gmail.com)
-Date: 2017/05
+Programmer: Diana Diaz  (dxd9318@g.rit.edu)
+Date: 2019/09
 ----------------------------------------------*/
 #ifndef __APPLICATIONCLASS_H_
 #define __APPLICATIONCLASS_H_
@@ -16,7 +16,7 @@ class Application
 {
 	MyMesh* m_pMesh = nullptr;
 
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	String m_sProgrammer = "Diana Diaz - dxd9318@g.rit.edu";
 private:
 	static ImGuiObject gui; //GUI object
 

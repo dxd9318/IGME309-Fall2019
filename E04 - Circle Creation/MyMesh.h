@@ -1,6 +1,6 @@
 /*----------------------------------------------
-Programmer: Alberto Bobadilla (labigm@gmail.com)
-Date: 2017/05
+Programmer: Diana Diaz  (dxd9318@g.rit.edu)
+Date: 2019/09
 ----------------------------------------------*/
 #ifndef __MYMESH_H_
 #define __MYMESH_H_
