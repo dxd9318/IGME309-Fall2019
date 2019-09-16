@@ -4,8 +4,15 @@ void Application::InitVariables(void)
 	//Make MyMesh object
 	m_pMesh = new MyMesh();
 	//Generate a circle
+
+	//m_pMesh->GenerateCircle(5.0f, 3, C_RED);		//	TRIANGLE TEST
+	//m_pMesh->GenerateCircle(5.0f, 4, C_RED);		//	QUAD TEST
 	//m_pMesh->GenerateCircle(2.0f, 5, C_RED);		//	PENTAGON TEST (DEFAULT)
-	m_pMesh->GenerateCircle(5.0f, 4, C_RED);		//	QUAD TEST
+
+	//m_pMesh->GenerateCircle(2.0f, 12, C_RED);		//	12-Sided
+	m_pMesh->GenerateCircle(2.0f, 360, C_RED);		//	360 Sides
+
+
 }
 void Application::Update(void)
 {

@@ -18,14 +18,11 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 
 		// set center point (0,0,0)
-		divide 360 degrees by subdivs to get angle between points //test ex. 360/5 = 72 degrees >> must convert to radians 
-		Create first triangle:	(0,0,0) (radius, 0, 0)	
-			start from right, then go CCW
-			points determined by trig.  (cos A for x, sin A for y)
-			increment by found angle, keep adding points until reaching 360 degrees
-		for the number of subdivisions, call AddTri using points in list (will need to increment index in list per triangle drawn)
-
-
+		// divide 360 degrees by subdivs to get angle between points //test ex. 360/5 = 72 degrees >> must convert to radians 
+		// Create first triangle:	(0,0,0) (radius, 0, 0)	
+			// start from right, then go CCW
+			// points determined by trig.  (cos A for x, sin A for y)
+			// increment by found angle, keep adding points until reaching 360 degrees
 
 		(0, 10)
 		
@@ -35,11 +32,14 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	*/
 
 	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
-
-
+	float foundAngle = 360.0f / a_nSubdivisions;
+	float foundAngleRads = glm::radians(foundAngle);
 
 	for (int i = 0; i < a_nSubdivisions; i++) {
-
+		AddTri(
+			v3Center,	//point A (center of circle)
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0),	//point B
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0));	//point C
 	}
 
 	// Adding information about color
