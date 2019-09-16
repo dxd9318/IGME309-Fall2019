@@ -17,11 +17,30 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		then call the AddTri function to generate a_nSubdivision number of faces
 
 
-		//set center point
-		// divide 360 degrees by subdivs to get angle between points
-		// for points, start at 0 degrees, add to list of points. increment by found angle, keep adding points until reaching 360 degrees
-		// for the number of subdivisions, call AddTri using points in list (will need to increment index in list per triangle drawn)
+		// set center point (0,0,0)
+		divide 360 degrees by subdivs to get angle between points //test ex. 360/5 = 72 degrees >> must convert to radians 
+		Create first triangle:	(0,0,0) (radius, 0, 0)	
+			start from right, then go CCW
+			points determined by trig.  (cos A for x, sin A for y)
+			increment by found angle, keep adding points until reaching 360 degrees
+		for the number of subdivisions, call AddTri using points in list (will need to increment index in list per triangle drawn)
+
+
+
+		(0, 10)
+		
+
+
+		(0, 0)    (10, 0)
 	*/
+
+	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
+
+
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -179,9 +198,9 @@ void MyMesh::Render(matrix4 a_mProjection, matrix4 a_mView, matrix4 a_mModel)
 }
 void MyMesh::AddTri(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vTopLeft)
 {
-	//C
-	//| \
-		//A--B
+	//C					C --- B
+	//| \				 \   /
+	//A--B				   A		//A is center of circle
 //This will make the triangle A->B->C 
 	AddVertexPosition(a_vBottomLeft);
 	AddVertexPosition(a_vBottomRight);
