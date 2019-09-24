@@ -17,7 +17,7 @@ void Application::InitVariables(void)
 	}
 
 	// APPLY POSITIONS FOR EACH CUBE HERE, BEFORE TRANSLATING THEM??
-	GenerateSpaceInvader();
+	//GenerateSpaceInvader();
 }
 void Application::Update(void)
 {
@@ -41,9 +41,10 @@ void Application::Display(void)
 
 	// SCALE
 	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(2.0f, 2.0f, 2.0f));	// Will be the same for all cubes
-	static float value = 0.0f;	// Counter, static to increment per display iteration
+	//static float value = 0.0f;	// Counter, static to increment per display iteration
 
 	//////////// APPLY POSITIONS FOR EACH CUBE HERE, BEFORE TRANSLATING THEM	// NOT SURE IF DOING THIS HERE IS WHY CONSIDERING THIS SHOULD MEAN IT RESETS POSITION EVERY FRAME DESPITE TRANSLATION
+	GenerateSpaceInvader();
 
 	/*
 	// TRANSLATION
@@ -62,6 +63,21 @@ void Application::Display(void)
 
 	m_pMesh->Render(m4Projection, m4View, m4Model);	// APPLY TO EACH CUBE INSTEAD
 	*/
+	for (int i = 0; i < 46; i++)
+	{
+		matrix4 m4Translate = glm::translate(IDENTITY_M4, (meshPositions[i]));
+		matrix4 m4Model = m4Scale * m4Translate;
+
+		spaceInvaderCubes[i]->Render(m4Projection, m4View, m4Model);
+
+	}
+	/*	//Rendering individual meshes
+	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), ToMatrix4(m_qArcBall));
+	m_pMesh1->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), glm::translate(vector3( 3.0f, 0.0f, 0.0f)));
+	*/
+
+
+	
 
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
@@ -194,7 +210,8 @@ void Application::Release(void)
 	//I DONT UNDERSTAND HOW TO DEALLOCATE POINTERS FROM A VECTOR
 
 	// DELETE ALL CUBES HERE
-	/*for (int i = 0; i < 46; i++) {
+	/*for (int i = 0; i < 46; i++) 
+	{
 		if (spaceInvaderCubes[i] != nullptr)
 		{
 			delete spaceInvaderCubes[i];
