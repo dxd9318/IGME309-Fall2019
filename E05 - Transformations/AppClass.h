@@ -15,7 +15,9 @@ Date: 2019/09
 class Application
 {
 	MyMesh* m_pMesh = nullptr;
-	MyMesh* m_pMesh1 = nullptr;
+	//MyMesh* m_pMesh1 = nullptr;
+	std::vector<MyMesh*> spaceInvaderCubes;
+	std::vector<vector3> meshPositions;
 
 	String m_sProgrammer = "Diana Diaz - dxd9318@g.rit.edu";
 private:
@@ -138,6 +140,12 @@ private:
 	OUTPUT: ---
 	*/
 	void ClearScreen(vector4 a_v4ClearColor = vector4(-1.0f));
+	/*
+	USAGE: Arranges cubes in shape of Space Invader
+	ARGUMENTS: ---
+	OUTPUT: ---
+	*/
+	void GenerateSpaceInvader();
 	/*
 	USAGE: Will initialize the controllers generically
 	ARGUMENTS:
