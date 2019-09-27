@@ -1,23 +1,17 @@
 #include "AppClass.h"
 void Application::InitVariables(void)
 {
-	// Make MyMesh object
+	// Make MyMesh object		// According to the C11 Translation and Scale demo, I can use the same MyMesh instance to generate multiple shapes, instead of calling a new MyMesh every time.
 	m_pMesh = new MyMesh();
-	//m_pMesh->GenerateCube(2.0f, C_BROWN);
-	//m_pMesh1 = new MyMesh();
-	//m_pMesh1->GenerateCube(1.0f, C_WHITE);
 	
-	// According to C11 Translation and Scale demo, can use the same MyMesh instance to generate multiple shapes, 
-	// instead of calling a new MyMesh every time as above.
-
-	// GENERATE ALL 46 CUBES FOR THE SPACE INVADER HERE
+	// Generates all 46 cubes needed to construct the Space Invader shape
 	for (int i = 0; i < 46; i++) {
 		m_pMesh->GenerateCube(2.0f, C_BROWN);
 		spaceInvaderCubes.push_back(m_pMesh);
 	}
 
 	// APPLY POSITIONS FOR EACH CUBE HERE, BEFORE TRANSLATING THEM??
-	//GenerateSpaceInvader();
+	GenerateSpaceInvader();
 }
 void Application::Update(void)
 {
@@ -35,16 +29,16 @@ void Application::Display(void)
 	// Clear the screen
 	ClearScreen();
 
-	// Taken from C11 Translation and Scale demo
+	// Taken from the C11 Translation and Scale demo
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 
-	// SCALE
-	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(0.1f, 0.1f, 0.1f));	// Will be the same for all cubes
+	// SCALE		// When I change the scale, both the cubes and the spaces between them scale. This tells me the coordinate system for each indivual cube is also getting scaled. Not what I want.
+	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(0.5f, 0.5f, 0.5f));	// Will be the same for all cubes
 	//static float value = 0.0f;	// Counter, static to increment per display iteration
 
 	//////////// APPLY POSITIONS FOR EACH CUBE HERE, BEFORE TRANSLATING THEM	// NOT SURE IF DOING THIS HERE IS WHY CONSIDERING THIS SHOULD MEAN IT RESETS POSITION EVERY FRAME DESPITE TRANSLATION
-	GenerateSpaceInvader();
+	//GenerateSpaceInvader();
 
 	/*
 	// TRANSLATION
@@ -63,41 +57,35 @@ void Application::Display(void)
 
 	m_pMesh->Render(m4Projection, m4View, m4Model);	// APPLY TO EACH CUBE INSTEAD
 	*/
+
+	// Renders all 46 cubes. Cube placement determined from meshPositions vector, which is populated in GenerateSpaceInvader()
 	for (int i = 0; i < 46; i++)
 	{
 		matrix4 m4Translate = glm::translate(IDENTITY_M4, (meshPositions[i]));
 		matrix4 m4Model = m4Scale * m4Translate;
 
 		spaceInvaderCubes[i]->Render(m4Projection, m4View, m4Model);
-
 	}
-	/*	//Rendering individual meshes
-	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), ToMatrix4(m_qArcBall));
-	m_pMesh1->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), glm::translate(vector3( 3.0f, 0.0f, 0.0f)));
-	*/
 
-
-	
-
-	// draw a skybox
+	// Draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 	
-	//render list call
+	// Render list call
 	m_uRenderCallCount = m_pMeshMngr->Render();
 
-	//clear the render list
+	// Clear the render list
 	m_pMeshMngr->ClearRenderList();
 	
-	//draw gui
+	// Draw gui
 	DrawGUI();
 	
-	//end the current frame (internally swaps the front and back buffers)
+	// End the current frame (internally swaps the front and back buffers)
 	m_pWindow->display();
 }
 void Application::GenerateSpaceInvader(void) 
 {
-	int spread = 10.0f;	// A factor by which to multiply the x and y position values of each cube. This shows me the cubes were placed correctly relatively to each other, this rendering issue was
-	// due to cube scale + finding the right spread factor.
+	int spread = 2.0f;	// A factor by which to multiply the x and y position values of each cube. This shows me the cubes were placed correctly relatively to each other, so the rendering issue was
+						// due to cube scale + finding the right spread factor.
 
 	// 8 ROWS, 11 MAX COLUMNS
 
@@ -113,7 +101,6 @@ void Application::GenerateSpaceInvader(void)
 	meshPositions.push_back(vector3(3.0f * spread, 4.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(4.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(5.0f, 0.0f, 0.0f));
-
 	
 	// Row 1
 	//meshPositions.push_back(vector3(-5.0f, 0.0f, 0.0f));
@@ -160,9 +147,7 @@ void Application::GenerateSpaceInvader(void)
 	meshPositions.push_back(vector3(-3.0f * spread, 0.0f, 0.0f));
 	meshPositions.push_back(vector3(-2.0f * spread, 0.0f, 0.0f));
 	meshPositions.push_back(vector3(-1.0f * spread, 0.0f, 0.0f));
-
 	meshPositions.push_back(vector3(0.0f,0.0f,0.0f));	// "dead center"
-
 	meshPositions.push_back(vector3(1.0f * spread, 0.0f, 0.0f));
 	meshPositions.push_back(vector3(2.0f * spread, 0.0f, 0.0f));
 	meshPositions.push_back(vector3(3.0f * spread, 0.0f, 0.0f));
