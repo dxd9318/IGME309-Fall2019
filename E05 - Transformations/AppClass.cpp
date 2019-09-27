@@ -40,7 +40,7 @@ void Application::Display(void)
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 
 	// SCALE
-	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(2.0f, 2.0f, 2.0f));	// Will be the same for all cubes
+	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(0.1f, 0.1f, 0.1f));	// Will be the same for all cubes
 	//static float value = 0.0f;	// Counter, static to increment per display iteration
 
 	//////////// APPLY POSITIONS FOR EACH CUBE HERE, BEFORE TRANSLATING THEM	// NOT SURE IF DOING THIS HERE IS WHY CONSIDERING THIS SHOULD MEAN IT RESETS POSITION EVERY FRAME DESPITE TRANSLATION
@@ -96,30 +96,34 @@ void Application::Display(void)
 }
 void Application::GenerateSpaceInvader(void) 
 {
+	int spread = 10.0f;	// A factor by which to multiply the x and y position values of each cube. This shows me the cubes were placed correctly relatively to each other, this rendering issue was
+	// due to cube scale + finding the right spread factor.
+
 	// 8 ROWS, 11 MAX COLUMNS
 
 	// Row 0	//Top
 	//meshPositions.push_back(vector3(-5.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(-4.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-3.0f, 4.0f, 0.0f));
+	meshPositions.push_back(vector3(-3.0f * spread, 4.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(-2.0f, 3.0f, 0.0f));
 	//meshPositions.push_back(vector3(-1.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(0.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(1.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(2.0f, 3.0f, 0.0f));
-	meshPositions.push_back(vector3(3.0f, 4.0f, 0.0f));
+	meshPositions.push_back(vector3(3.0f * spread, 4.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(4.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(5.0f, 0.0f, 0.0f));
 
+	
 	// Row 1
 	//meshPositions.push_back(vector3(-5.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(-4.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(-3.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-2.0f, 3.0f, 0.0f));
+	meshPositions.push_back(vector3(-2.0f * spread, 3.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(-1.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(0.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(1.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(2.0f, 3.0f, 0.0f));
+	meshPositions.push_back(vector3(2.0f * spread, 3.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(3.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(4.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(5.0f, 0.0f, 0.0f));
@@ -127,79 +131,79 @@ void Application::GenerateSpaceInvader(void)
 	// Row 2
 	//meshPositions.push_back(vector3(-5.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(-4.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-3.0f, 2.0f, 0.0f));
-	meshPositions.push_back(vector3(-2.0f, 2.0f, 0.0f));
-	meshPositions.push_back(vector3(-1.0f, 2.0f, 0.0f));
-	meshPositions.push_back(vector3(0.0f, 2.0f, 0.0f));
-	meshPositions.push_back(vector3(1.0f, 2.0f, 0.0f));
-	meshPositions.push_back(vector3(2.0f, 2.0f, 0.0f));
-	meshPositions.push_back(vector3(3.0f, 2.0f, 0.0f));
+	meshPositions.push_back(vector3(-3.0f * spread, 2.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(-2.0f * spread, 2.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(-1.0f * spread, 2.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(0.0f * spread, 2.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(1.0f * spread, 2.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(2.0f * spread, 2.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(3.0f * spread, 2.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(4.0f, 0.0f, 0.0f));
 	//meshPositions.push_back(vector3(5.0f, 0.0f, 0.0f));
 
 	// Row 3	// "Eyes"
 	//meshPositions.push_back(vector3(-5.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-4.0f, 1.0f, 0.0f));
-	meshPositions.push_back(vector3(-3.0f, 1.0f, 0.0f));
+	meshPositions.push_back(vector3(-4.0f * spread, 1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(-3.0f * spread, 1.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(-2.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-1.0f, 1.0f, 0.0f));
-	meshPositions.push_back(vector3(0.0f, 1.0f, 0.0f));
-	meshPositions.push_back(vector3(1.0f, 1.0f, 0.0f));
+	meshPositions.push_back(vector3(-1.0f * spread, 1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(0.0f * spread, 1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(1.0f * spread, 1.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(2.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(3.0f, 1.0f, 0.0f));
-	meshPositions.push_back(vector3(4.0f, 1.0f, 0.0f));
+	meshPositions.push_back(vector3(3.0f * spread, 1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(4.0f * spread, 1.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(5.0f, 0.0f, 0.0f));
 
 	// Row 4	// "Center"
-	meshPositions.push_back(vector3(-5.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-4.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-3.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-2.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(-1.0f, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(-5.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(-4.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(-3.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(-2.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(-1.0f * spread, 0.0f, 0.0f));
 
 	meshPositions.push_back(vector3(0.0f,0.0f,0.0f));	// "dead center"
 
-	meshPositions.push_back(vector3(1.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(2.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(3.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(4.0f, 0.0f, 0.0f));
-	meshPositions.push_back(vector3(5.0f, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(1.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(2.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(3.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(4.0f * spread, 0.0f, 0.0f));
+	meshPositions.push_back(vector3(5.0f * spread, 0.0f, 0.0f));
 
 	// Row 5
-	meshPositions.push_back(vector3(-5.0f, -1.0f, 0.0f));
+	meshPositions.push_back(vector3(-5.0f * spread, -1.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(-4.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(-3.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(-2.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(-1.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(0.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(1.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(2.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(3.0f, -1.0f, 0.0f));
+	meshPositions.push_back(vector3(-3.0f * spread, -1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(-2.0f * spread, -1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(-1.0f * spread, -1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(0.0f * spread, -1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(1.0f * spread, -1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(2.0f * spread, -1.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(3.0f * spread, -1.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(4.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(5.0f, -1.0f, 0.0f));
+	meshPositions.push_back(vector3(5.0f * spread, -1.0f * spread, 0.0f));
 
 	// Row 6
-	meshPositions.push_back(vector3(-5.0f, -2.0f, 0.0f));
+	meshPositions.push_back(vector3(-5.0f * spread, -2.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(-4.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(-3.0f, -2.0f, 0.0f));
+	meshPositions.push_back(vector3(-3.0f * spread, -2.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(-2.0f, -1.0f, 0.0f));
 	//meshPositions.push_back(vector3(-1.0f, -1.0f, 0.0f));
 	//meshPositions.push_back(vector3(0.0f, -1.0f, 0.0f));
 	//meshPositions.push_back(vector3(1.0f, -1.0f, 0.0f));
 	//meshPositions.push_back(vector3(2.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(3.0f, -2.0f, 0.0f));
+	meshPositions.push_back(vector3(3.0f * spread, -2.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(4.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(5.0f, -2.0f, 0.0f));
+	meshPositions.push_back(vector3(5.0f * spread, -2.0f * spread, 0.0f));
 
 	// Row 7	//Bottom
 	//meshPositions.push_back(vector3(-5.0f, -2.0f, 0.0f));
 	//meshPositions.push_back(vector3(-4.0f, -1.0f, 0.0f));
 	//meshPositions.push_back(vector3(-3.0f, -2.0f, 0.0f));
-	meshPositions.push_back(vector3(-2.0f, -3.0f, 0.0f));
-	meshPositions.push_back(vector3(-1.0f, -3.0f, 0.0f));
+	meshPositions.push_back(vector3(-2.0f * spread, -3.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(-1.0f * spread, -3.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(0.0f, -1.0f, 0.0f));
-	meshPositions.push_back(vector3(1.0f, -3.0f, 0.0f));
-	meshPositions.push_back(vector3(2.0f, -3.0f, 0.0f));
+	meshPositions.push_back(vector3(1.0f * spread, -3.0f * spread, 0.0f));
+	meshPositions.push_back(vector3(2.0f * spread, -3.0f * spread, 0.0f));
 	//meshPositions.push_back(vector3(3.0f, -2.0f, 0.0f));
 	//meshPositions.push_back(vector3(4.0f, -1.0f, 0.0f));
 	//meshPositions.push_back(vector3(5.0f, -2.0f, 0.0f));
