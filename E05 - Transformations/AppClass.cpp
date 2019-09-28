@@ -84,8 +84,8 @@ void Application::Display(void)
 }
 void Application::GenerateSpaceInvader(void) 
 {
-	int spread = 2.0f;	// A factor by which to multiply the x and y position values of each cube. This shows me the cubes were placed correctly relatively to each other, so the rendering issue was
-						// due to cube scale + finding the right spread factor.
+	int spread = 2.0f;	// A factor by which to multiply the x and y position values of each cube. This shows me the cubes were placed correctly relatively to each other,
+						// so the rendering issue was due to cube scale + finding the right spread factor.
 
 	// 8 ROWS, 11 MAX COLUMNS
 
@@ -198,7 +198,7 @@ void Application::Release(void)
 	//IM GETTING MEMORY LEAKS
 	//I DONT UNDERSTAND HOW TO DEALLOCATE POINTERS FROM A VECTOR
 
-	// DELETE ALL CUBES HERE
+	// DELETE ALL CUBES HERE				// FOR SOME REASON, EVERYTHING BREAKS AFTER THE FIRST LOOP
 	/*for (int i = 0; i < 46; i++) 
 	{
 		if (spaceInvaderCubes[i] != nullptr)
@@ -207,10 +207,10 @@ void Application::Release(void)
 			spaceInvaderCubes[i] = nullptr;
 		}
 	}
-	spaceInvaderCubes.clear();
-	*/
+	spaceInvaderCubes.clear();*/
+	
 
-	//SafeDelete(m_pMesh1);
+	SafeDelete(m_pMesh);
 	// Release GUI
 	ShutdownGUI();
 }

@@ -1,10 +1,21 @@
 #include "AppClass.h"
+#include "MyMesh.h"
+
 void Application::InitVariables(void)
 {
 	//Change this to your name and email
 	m_sProgrammer = "Diana Diaz - dxd9318@g.rit.edu";
 
-	//m_pTriangle = new MyMesh(0.5f);
+	/*
+	m_pTriangle = new MyMesh();
+	m_pTriangle->Init();
+	m_pTriangle->SetScale(0.5f);
+	*/
+
+	// More elegant way of doing the above
+	//m_pTriangle = MyMesh::MakeTriangle(0.5f);
+	m_pQuad = MyMesh::MakeQuad(0.5f);
+
 }
 void Application::Update(void)
 {
@@ -22,7 +33,11 @@ void Application::Display(void)
 	// Clear the screen
 	ClearScreen();
 
-	//m_pTriangle->Draw();
+	if (m_pTriangle != nullptr)
+		m_pTriangle->Draw();
+
+	if (m_pQuad != nullptr)
+		m_pQuad->Draw();
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
