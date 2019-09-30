@@ -34,39 +34,26 @@ void Application::Display(void)
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 
-	// SCALE		// When I change the scale, both the cubes and the spaces between them scale. This tells me the coordinate system for each indivual cube is also getting scaled. Not what I want.
+	// SCALE						// When I change the scale, both the cubes and the spaces between them scale. This tells me the coordinate system for each indivual cube is also getting scaled. Not what I want.
 	matrix4 m4Scale = glm::scale(IDENTITY_M4, vector3(0.5f, 0.5f, 0.5f));	// Will be the same for all cubes
 
-	//////////// APPLY POSITIONS FOR EACH CUBE HERE, BEFORE TRANSLATING THEM	// NOT SURE IF DOING THIS HERE IS RIGHT CONSIDERING THIS SHOULD MEAN IT RESETS POSITION EVERY FRAME DESPITE TRANSLATION
-	//GenerateSpaceInvader();
-
-	//FOR LEFT-RIGHT SPACE INVADER MOTION
-	// keep a "direction" variable, set equal to 1
-	// multiply translation value by "direction" variable
-	// whenever counter hits absVal of 10 (or some other value), multiply "direction" var by -1 (flip translation direction)
-	// MUST APPLY THIS LOGIC TO EVERY CUBE? I think that should be fine (ie, not too costly)
-
-	// TRANSLATION
-	//matrix4 m4Translate = glm::translate(IDENTITY_M4, vector3(value, 2.0f, 3.0f));		// x,y,z, where x is altered each frame, and is (x + value). when value hits absVal(10), flip value
-	static float value = 0.0f;		// Counter, static to increment per display iteration
+	// TRANSLATION VARIABLES
+	static float value = 0.0f;		// Frame animation counter, static to increment per display iteration
 	static float direction = 0.1f;	// Directional variable, will handle flipping the space invader's movement direction
 
 	if (glm::abs(value) > 10.0f) 
 	{
-		direction *= -1.0f;
+		direction *= -1.0f;			//  When value hits absVal(10), direction flips.
 	}
-	value += direction;				// Will only increment after mesh has been translated in this instance	//add to x position
-
+	value += direction;				// The actual math behind the position animation
 
 	// Renders all 46 cubes. Cube placement determined from meshPositions vector, which is populated in GenerateSpaceInvader()
 	for (int i = 0; i < 46; i++)
 	{
-		// TRANSLATION
-		matrix4 m4Translate = glm::translate(IDENTITY_M4, vector3(meshPositions[i].x + value, meshPositions[i].y, meshPositions[i].z));
-		//matrix4 m4Translate = glm::translate(IDENTITY_M4, (meshPositions[i]));
+		// TRANSLATION APPLICATION
+		matrix4 m4Translate = glm::translate(IDENTITY_M4, vector3(meshPositions[i].x + value, meshPositions[i].y, meshPositions[i].z));		// x is altered each frame, and is (x + value).
 		
 		matrix4 m4Model = m4Scale * m4Translate;
-
 		spaceInvaderCubes[i]->Render(m4Projection, m4View, m4Model);
 	}
 
