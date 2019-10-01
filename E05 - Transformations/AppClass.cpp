@@ -11,7 +11,7 @@ void Application::InitVariables(void)
 		spaceInvaderCubes.push_back(m_pMesh);
 	}
 
-	// APPLY POSITIONS FOR EACH CUBE HERE, BEFORE TRANSLATING THEM??
+	// APPLY POSITIONS FOR EACH CUBE
 	GenerateSpaceInvader();
 }
 void Application::Update(void)
@@ -41,9 +41,9 @@ void Application::Display(void)
 	static float value = 0.0f;		// Frame animation counter, static to increment per display iteration
 	static float direction = 0.1f;	// Directional variable, will handle flipping the space invader's movement direction
 
-	if (glm::abs(value) > 10.0f) 
+	if (glm::abs(value) > 10.0f)	// From glm documentation
 	{
-		direction *= -1.0f;			//  When value hits absVal(10), direction flips.
+		direction *= -1.0f;			// When value hits absVal(10), direction flips.
 	}
 	value += direction;				// The actual math behind the position animation
 
@@ -185,22 +185,26 @@ void Application::GenerateSpaceInvader(void)
 }
 void Application::Release(void)
 {
-	//IM GETTING MEMORY LEAKS
-	//I DONT UNDERSTAND HOW TO DEALLOCATE POINTERS FROM A VECTOR
+	// DELETE ALL CUBES HERE
+	// in theory, go through each member of mesh pointer vector,
+		// de-ref the pointer, and deallocate the 'pointee'
+		// set pointer to nullptr to avoid dangling
 
-	// DELETE ALL CUBES HERE				// FOR SOME REASON, EVERYTHING BREAKS AFTER THE FIRST LOOP
-	/*for (int i = 0; i < 46; i++) 
+	//std::for_each(spaceInvaderCubes.begin(), spaceInvaderCubes.end(), delete);	//can't do this
+
+	/*for (int i = 0; i < 46; i++)				// breaks after first loop.	// I only called 'new' once so this isn't necessary.
 	{
 		if (spaceInvaderCubes[i] != nullptr)
 		{
 			delete spaceInvaderCubes[i];
 			spaceInvaderCubes[i] = nullptr;
 		}
-	}
-	spaceInvaderCubes.clear();*/
-	
+	}*/
 
-	SafeDelete(m_pMesh);
+	spaceInvaderCubes.clear();			// clear all 46 cubes        //does this eliminate just the stored pointers, or the pointers and their objects?
+	meshPositions.clear();				// clear the 46 positions for the cubes
+	SafeDelete(m_pMesh);				// deallocate the mesh rendering object
+	
 	// Release GUI
 	ShutdownGUI();
 }
