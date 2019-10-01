@@ -2,7 +2,7 @@
 void Application::InitVariables(void)
 {
 	//Change this to your name and email
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Diana Diaz - dxd9318@g.rit.edu";
 
 	//Set the position and target of the camera
 	m_pCameraMngr->SetPositionTargetAndUpward(vector3(5.0f,3.0f,15.0f), ZERO_V3, AXIS_Y);
@@ -52,14 +52,17 @@ void Application::Display(void)
 	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
 
 	//calculate the current position
+	static uint sprintCounter = 0;	// Keeps track of the number of the current "sprint", ie. the path between the current and next stops.
+	vector3 v3SprintStart = m_stopsList[sprintCounter];	// Sets the starting point for the current sprint based on the number of the current sprint.
+	vector3 v3SprintEnd = m_stopsList[(sprintCounter + 1) % m_stopsList.size()];	// Sets the next stop as the end of the current sprint. 
+																					// % used to loop to first stop if at end of stops list. 
+
+
 	vector3 v3CurrentPos;
-	
-
-
 
 
 	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
+	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);	// replace this vector3(0) with call to glm::lerp function
 	//-------------------
 	
 
