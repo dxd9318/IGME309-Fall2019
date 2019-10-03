@@ -40,7 +40,7 @@ private:
 
 	MyMesh* m_pTriangle = nullptr;
 	MyMesh* m_pQuad = nullptr;
-
+	MyMesh* m_pCube = nullptr;
 
 public:
 #pragma region Constructor / Run / Destructor

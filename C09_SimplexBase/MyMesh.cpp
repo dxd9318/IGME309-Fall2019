@@ -33,7 +33,7 @@ void MyMesh::Init()
 void MyMesh::InitShader()
 {
 	m_uShaderProgramId = LoadShaders("Shaders//BasicColor.vs", "Shaders//BasicColor.fs");
-	//m_uShaderProgramId = LoadShaders("Shaders//BasicColor.vs", "Shaders//BasicColor.fs");
+	//m_uShaderProgramId = LoadShaders("Shaders//Basic.vs", "Shaders//BasicColor.fs");
 
 	glUseProgram(m_uShaderProgramId);
 }
@@ -43,7 +43,7 @@ void MyMesh::InitTriangle()
 	glBindVertexArray(m_uVAO);	// bind VAO
 
 	// Consists of 3 vertices
-	float triSize = 0.5f;
+	float triSize = 0.75f;
 
 	// Vertex 1 (top point)
 	vertex vertexTopPoint;
@@ -130,9 +130,173 @@ void MyMesh::InitQuad()
 	glBindVertexArray(0);	//unbind VAO
 }
 
+void MyMesh::InitCube()
+{
+	glBindVertexArray(m_uVAO);	// bind VAO
+
+	// Consists of 4 vertices
+	float quadSize = 0.5f;
+
+	// FRONT VERTICES
+	// Vertex 1 (top right front)
+	vertex vertexTopRightFrontPoint;
+	vertexTopRightFrontPoint.position = glm::vec3(quadSize, quadSize, quadSize);
+	vertexTopRightFrontPoint.color = glm::vec3(1.0f, 0.0f, 0.0f);	// red
+
+	// Vertex 2 (top left front)
+	vertex vertexTopLeftFrontPoint;
+	vertexTopLeftFrontPoint.position = glm::vec3(-quadSize, quadSize, quadSize);
+	vertexTopLeftFrontPoint.color = glm::vec3(0.0f, 1.0f, 0.0f);	// green
+
+	// Vertex 3 (bottom left front)
+	vertex vertexBottomLeftFrontPoint;
+	vertexBottomLeftFrontPoint.position = glm::vec3(-quadSize, -quadSize, quadSize);
+	vertexBottomLeftFrontPoint.color = glm::vec3(0.0f, 0.0f, 1.0f);	// blue
+
+	// Vertex 4 (bottom right front)
+	vertex vertexBottomRightFrontPoint;
+	vertexBottomRightFrontPoint.position = glm::vec3(quadSize, -quadSize, quadSize);
+	vertexBottomRightFrontPoint.color = glm::vec3(1.0f, 1.0f, 0.0f);	// yellow
+
+	// BACK VERTICES
+	// Vertex 5 (top right back)
+	vertex vertexTopRightBackPoint;
+	vertexTopRightBackPoint.position = glm::vec3(quadSize, quadSize, -quadSize);
+	vertexTopRightBackPoint.color = glm::vec3(1.0f, 0.0f, 0.0f);	// red
+
+	// Vertex 6 (top left back)
+	vertex vertexTopLeftBackPoint;
+	vertexTopLeftBackPoint.position = glm::vec3(-quadSize, quadSize, -quadSize);
+	vertexTopLeftBackPoint.color = glm::vec3(0.0f, 1.0f, 0.0f);	// green
+
+	// Vertex 7 (bottom left back)
+	vertex vertexBottomLeftBackPoint;
+	vertexBottomLeftBackPoint.position = glm::vec3(-quadSize, -quadSize, -quadSize);
+	vertexBottomLeftBackPoint.color = glm::vec3(0.0f, 0.0f, 1.0f);	// blue
+
+	// Vertex 8 (bottom right back)
+	vertex vertexBottomRightBackPoint;
+	vertexBottomRightBackPoint.position = glm::vec3(quadSize, -quadSize, -quadSize);
+	vertexBottomRightBackPoint.color = glm::vec3(1.0f, 1.0f, 0.0f);	// yellow
+	//------------------------------
+
+	// 1 - FRONT FACE
+	{
+		// First Triangle		// Remember, Triangles rendered COUNTER CLOCK-WISE
+		m_vertices.push_back(vertexTopRightFrontPoint);
+		m_vertices.push_back(vertexTopLeftFrontPoint);
+		m_vertices.push_back(vertexBottomLeftFrontPoint);
+		// Second Triangle
+		m_vertices.push_back(vertexBottomLeftFrontPoint);
+		m_vertices.push_back(vertexBottomRightFrontPoint);
+		m_vertices.push_back(vertexTopRightFrontPoint);
+	}
+
+	// 2 - BACK FACE
+	{
+		// First Triangle
+		m_vertices.push_back(vertexTopLeftBackPoint);
+		m_vertices.push_back(vertexTopRightBackPoint);
+		m_vertices.push_back(vertexBottomLeftBackPoint);
+		// Second Triangle
+		m_vertices.push_back(vertexBottomLeftBackPoint);
+		m_vertices.push_back(vertexTopRightBackPoint);
+		m_vertices.push_back(vertexBottomRightBackPoint);
+	}
+	
+	// 3 - LEFT FACE
+	{
+		// First Triangle
+		m_vertices.push_back(vertexTopLeftFrontPoint);
+		m_vertices.push_back(vertexTopLeftBackPoint);
+		m_vertices.push_back(vertexBottomLeftBackPoint);
+		// Second Triangle
+		m_vertices.push_back(vertexBottomLeftBackPoint);
+		m_vertices.push_back(vertexBottomLeftFrontPoint);
+		m_vertices.push_back(vertexTopLeftFrontPoint);
+	}
+
+	// 4 - RIGHT FACE
+	{
+		// First Triangle
+		m_vertices.push_back(vertexTopRightFrontPoint);
+		m_vertices.push_back(vertexBottomRightFrontPoint);
+		m_vertices.push_back(vertexTopRightBackPoint);
+
+		// Second Triangle
+		m_vertices.push_back(vertexTopRightBackPoint);
+		m_vertices.push_back(vertexBottomRightFrontPoint);
+		m_vertices.push_back(vertexBottomRightBackPoint);
+	}
+
+	// 5 - TOP FACE
+	{
+		// First Triangle
+		m_vertices.push_back(vertexTopRightBackPoint);
+		m_vertices.push_back(vertexTopLeftBackPoint);
+		m_vertices.push_back(vertexTopLeftFrontPoint);
+		// Second Triangle
+		m_vertices.push_back(vertexTopRightBackPoint);
+		m_vertices.push_back(vertexTopLeftFrontPoint);
+		m_vertices.push_back(vertexTopRightFrontPoint);
+	}
+	
+	// 6 - BOTTOM FACE
+	{
+		// First Triangle
+		m_vertices.push_back(vertexBottomRightFrontPoint);
+		m_vertices.push_back(vertexBottomLeftFrontPoint);
+		m_vertices.push_back(vertexBottomLeftBackPoint);
+		// Second Triangle
+		m_vertices.push_back(vertexBottomRightFrontPoint);
+		m_vertices.push_back(vertexBottomLeftBackPoint);
+		m_vertices.push_back(vertexBottomRightBackPoint);
+	}
+	//------------------------------
+
+	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);	// first three vertices, for testing triangle rendering
+
+	// Count the attributes
+	int attributeCount = 2;
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(1 * sizeof(glm::vec3)));
+
+	glBindVertexArray(0);	//unbind VAO
+}
+
 void MyMesh::Draw()
 {
 	glBindVertexArray(m_uVAO);	//bind
+
+	// View and Projection matrices	
+	auto pCameraManager = CameraManager::GetInstance();
+	glm::mat4 m4Projection = pCameraManager->GetProjectionMatrix();		// allows model to be sized based on window size, using lines above and below
+	glm::mat4 m4View = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
+	glm::mat4 m4Model = glm::mat4(1.0f);
+
+	/*
+		Alternatively, could use the following for projection matrix
+
+		float aspect = 1.8f; // place your screen aspect ratio here
+		glm::mat4 m3Projection = glm::perspective(45.0f, aspect, 0.1f, 1000.0f);
+		// OR
+		glm::mat4 m3Projection = glm::perspectiveFOV(45.0f, 1920.0f, 1080.0f, 0.1f, 1000.0f);
+
+	*/
+
+	static float theta = 0.0f;
+	theta += 0.01f;
+	//m4Model = glm::rotate(glm::mat4(1.0f), theta, glm::vec3(0.0f, 1.0f, 0.0f));
+	m4Model = glm::rotate(m4Model, theta /*+ 0.51f * ((float)rand() / (float)RAND_MAX)*/, glm::vec3(0.0f, 1.0f, 0.0f));
+	m4Model = glm::rotate(m4Model, theta /*+ 0.01f * ((float)rand() / (float)RAND_MAX)*/, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	// Read uniforms and send values
+	GLuint MVP = glGetUniformLocation(m_uShaderProgramId, "transform");	// Model View Projection
+	glUniformMatrix4fv(MVP, 1, GL_FALSE, glm::value_ptr(m4Projection * m4View * m4Model));
 
 	// Draw
 	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
@@ -170,6 +334,51 @@ MyMesh* MyMesh::MakeQuad(float size)
 	// Set up quad here
 	pMesh->InitQuad();
 	pMesh->SetScale(size);
+
+	return pMesh;
+}
+
+MyMesh* MyMesh::MakeCube(float size)
+{
+	MyMesh* pMesh = nullptr;
+
+	pMesh = new MyMesh;
+	pMesh->Init();
+
+	// Set up cube here
+	pMesh->InitCube();
+	pMesh->SetScale(size);
+
+	return pMesh;
+}
+
+MyMesh* MyMesh::Make(MyMesh::type meshType, float size)
+{
+	MyMesh* pMesh = nullptr;
+
+	switch (meshType)
+	{
+		case MyMesh::type::TRIANGLE:
+		{
+			pMesh = MyMesh::MakeTriangle(size);
+		} break;
+		case MyMesh::type::QUAD:
+		{
+			pMesh = MyMesh::MakeQuad(size);
+
+		} break;
+		case MyMesh::type::CUBE:
+		{
+			pMesh = MyMesh::MakeCube(size);
+
+		} break;
+		case MyMesh::type::INVALID:
+		default:
+		{
+			pMesh = nullptr;
+			// Error!
+		} break;
+	}
 
 	return pMesh;
 }

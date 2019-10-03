@@ -20,6 +20,15 @@ struct vertex
 class MyMesh 
 {
 public:
+	typedef enum class TYPES
+	{
+		TRIANGLE,
+		QUAD,
+		CUBE,
+		INVALID
+	} type;
+
+public:
 	MyMesh();
 	~MyMesh();
 
@@ -27,13 +36,17 @@ public:
 	void InitShader();
 	void InitTriangle();
 	void InitQuad();
+	void InitCube();
 
 	void Draw();
 	void SetScale(float size);
 
-public:
+	static MyMesh* Make(MyMesh::type meshType, float size);
+
+private:
 	static MyMesh* MakeTriangle(float size);
 	static MyMesh* MakeQuad(float size);
+	static MyMesh* MakeCube(float size);
 
 private:
 	std::vector<vertex> m_vertices;
@@ -42,7 +55,6 @@ private:
 	GLuint m_uVBO = 0;
 
 	float m_scale = 1.0f;
-
 };
 
 #endif // ! MY_MESH_H_
