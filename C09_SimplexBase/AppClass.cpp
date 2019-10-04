@@ -17,6 +17,9 @@ void Application::InitVariables(void)
 	//m_pQuad = MyMesh::MakeQuad(0.5f);
 	//m_pCube = MyMesh::MakeCube(0.5f);
 	
+	// The above won't work anymore now that we made those methods private
+	//m_pTriangle = MyMesh::Make(MyMesh::type::TRIANGLE, 0.5f);
+	//m_pQuad = MyMesh::Make(MyMesh::type::QUAD, 0.5f);
 	m_pCube = MyMesh::Make(MyMesh::type::CUBE, 0.5f);
 
 }

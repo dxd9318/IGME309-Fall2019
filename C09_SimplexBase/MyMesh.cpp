@@ -21,6 +21,9 @@ void MyMesh::Init()
 	glBindVertexArray(m_uVAO);				//This indicates that we're now using the VAO,
 	glBindBuffer(GL_ARRAY_BUFFER, m_uVBO);	// and now using the VAO
 
+	glGenBuffers(1, &m_uVIO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uVIO);
+
 	// Set up Shader
 	InitShader();
 
@@ -65,6 +68,16 @@ void MyMesh::InitTriangle()
 
 	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);
 
+
+
+	// Fill Index Buffer (VIO)
+	m_indices.push_back((unsigned short)0);
+	m_indices.push_back((unsigned short)1);
+	m_indices.push_back((unsigned short)2);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW);
+
+
 	// Count the attributes
 	int attributeCount = 2;
 	glEnableVertexAttribArray(0);
@@ -87,23 +100,28 @@ void MyMesh::InitQuad()
 	vertex vertexTopRightPoint;
 	vertexTopRightPoint.position = glm::vec3(quadSize, quadSize, 0.0f);
 	vertexTopRightPoint.color = glm::vec3(1.0f, 0.0f, 0.0f);	// red
+	m_vertices.push_back(vertexTopRightPoint);
 
 	// Vertex 2 (top left)
 	vertex vertexTopLeftPoint;
 	vertexTopLeftPoint.position = glm::vec3(-quadSize, quadSize, 0.0f);
 	vertexTopLeftPoint.color = glm::vec3(0.0f, 1.0f, 0.0f);	// green
+	m_vertices.push_back(vertexTopLeftPoint);
 
 	// Vertex 3 (bottom left)
 	vertex vertexBottomLeftPoint;
 	vertexBottomLeftPoint.position = glm::vec3(-quadSize, -quadSize, 0.0f);
 	vertexBottomLeftPoint.color = glm::vec3(0.0f, 0.0f, 1.0f);	// blue
+	m_vertices.push_back(vertexBottomLeftPoint);
 
 	// Vertex 4 (bottom right)
 	vertex vertexBottomRightPoint;
 	vertexBottomRightPoint.position = glm::vec3(quadSize, -quadSize, 0.0f);
 	vertexBottomRightPoint.color = glm::vec3(1.0f, 1.0f, 0.0f);	// yellow
+	m_vertices.push_back(vertexBottomRightPoint);
 
-
+	/*
+	// No longer relevant now that we've switched to referring to VIO for rendering (vs just the VBO)
 	// First Triangle		// Remember, Triangles rendered COUNTER CLOCK-WISE
 	m_vertices.push_back(vertexTopRightPoint);
 	m_vertices.push_back(vertexTopLeftPoint);
@@ -113,10 +131,23 @@ void MyMesh::InitQuad()
 	m_vertices.push_back(vertexBottomLeftPoint);
 	m_vertices.push_back(vertexBottomRightPoint);
 	m_vertices.push_back(vertexTopRightPoint);
-
+	*/
 
 	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);
 	//glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);	// first three vertices, for testing triangle rendering
+
+
+	// Fill Index Buffer (VIO)	//how does it know to refer to the indices of objects stored in the vertex vector?
+	//First triangle
+	m_indices.push_back((unsigned short)0);
+	m_indices.push_back((unsigned short)1);
+	m_indices.push_back((unsigned short)2);
+	//Second triangle
+	m_indices.push_back((unsigned short)0);
+	m_indices.push_back((unsigned short)2);
+	m_indices.push_back((unsigned short)3);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW);
 
 
 	// Count the attributes
@@ -136,52 +167,81 @@ void MyMesh::InitCube()
 
 	// Consists of 4 vertices
 	float quadSize = 0.5f;
+	unsigned short vertCount = 0;
 
 	// FRONT VERTICES
 	// Vertex 1 (top right front)
 	vertex vertexTopRightFrontPoint;
 	vertexTopRightFrontPoint.position = glm::vec3(quadSize, quadSize, quadSize);
 	vertexTopRightFrontPoint.color = glm::vec3(1.0f, 0.0f, 0.0f);	// red
+	m_vertices.push_back(vertexTopRightFrontPoint);
+	unsigned short vTRF = vertCount++;
 
 	// Vertex 2 (top left front)
 	vertex vertexTopLeftFrontPoint;
 	vertexTopLeftFrontPoint.position = glm::vec3(-quadSize, quadSize, quadSize);
 	vertexTopLeftFrontPoint.color = glm::vec3(0.0f, 1.0f, 0.0f);	// green
+	m_vertices.push_back(vertexTopLeftFrontPoint);
+	unsigned short vTLF = vertCount++;
 
 	// Vertex 3 (bottom left front)
 	vertex vertexBottomLeftFrontPoint;
 	vertexBottomLeftFrontPoint.position = glm::vec3(-quadSize, -quadSize, quadSize);
 	vertexBottomLeftFrontPoint.color = glm::vec3(0.0f, 0.0f, 1.0f);	// blue
+	m_vertices.push_back(vertexBottomLeftFrontPoint);
+	unsigned short vBLF = vertCount++;
 
 	// Vertex 4 (bottom right front)
 	vertex vertexBottomRightFrontPoint;
 	vertexBottomRightFrontPoint.position = glm::vec3(quadSize, -quadSize, quadSize);
 	vertexBottomRightFrontPoint.color = glm::vec3(1.0f, 1.0f, 0.0f);	// yellow
+	m_vertices.push_back(vertexBottomRightFrontPoint);
+	unsigned short vBRF = vertCount++;
 
 	// BACK VERTICES
 	// Vertex 5 (top right back)
 	vertex vertexTopRightBackPoint;
 	vertexTopRightBackPoint.position = glm::vec3(quadSize, quadSize, -quadSize);
 	vertexTopRightBackPoint.color = glm::vec3(1.0f, 0.0f, 0.0f);	// red
+	m_vertices.push_back(vertexTopRightBackPoint);
+	unsigned short vTRB = vertCount++;
 
 	// Vertex 6 (top left back)
 	vertex vertexTopLeftBackPoint;
 	vertexTopLeftBackPoint.position = glm::vec3(-quadSize, quadSize, -quadSize);
 	vertexTopLeftBackPoint.color = glm::vec3(0.0f, 1.0f, 0.0f);	// green
+	m_vertices.push_back(vertexTopLeftBackPoint);
+	unsigned short vTLB = vertCount++;
 
 	// Vertex 7 (bottom left back)
 	vertex vertexBottomLeftBackPoint;
 	vertexBottomLeftBackPoint.position = glm::vec3(-quadSize, -quadSize, -quadSize);
 	vertexBottomLeftBackPoint.color = glm::vec3(0.0f, 0.0f, 1.0f);	// blue
+	m_vertices.push_back(vertexBottomLeftBackPoint);
+	unsigned short vBLB = vertCount++;
 
 	// Vertex 8 (bottom right back)
 	vertex vertexBottomRightBackPoint;
 	vertexBottomRightBackPoint.position = glm::vec3(quadSize, -quadSize, -quadSize);
 	vertexBottomRightBackPoint.color = glm::vec3(1.0f, 1.0f, 0.0f);	// yellow
-	//------------------------------
+	m_vertices.push_back(vertexBottomRightBackPoint);
+	unsigned short vBRB = vertCount++;
 
+	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);	//?? doesn't work w/o this line, but shouldnt it?
+
+	// Fill Index Buffer (VIO)
 	// 1 - FRONT FACE
 	{
+		//First triangle		// Remember, Triangles rendered COUNTER CLOCK-WISE
+		m_indices.push_back(vTRF);
+		m_indices.push_back(vTLF);
+		m_indices.push_back(vBLF);
+		//Second triangle
+		m_indices.push_back(vBLF);
+		m_indices.push_back(vBRF);
+		m_indices.push_back(vTRF);
+
+		/*
 		// First Triangle		// Remember, Triangles rendered COUNTER CLOCK-WISE
 		m_vertices.push_back(vertexTopRightFrontPoint);
 		m_vertices.push_back(vertexTopLeftFrontPoint);
@@ -190,10 +250,21 @@ void MyMesh::InitCube()
 		m_vertices.push_back(vertexBottomLeftFrontPoint);
 		m_vertices.push_back(vertexBottomRightFrontPoint);
 		m_vertices.push_back(vertexTopRightFrontPoint);
+		*/
 	}
 
 	// 2 - BACK FACE
 	{
+		//First triangle
+		m_indices.push_back(vTLB);
+		m_indices.push_back(vTRB);
+		m_indices.push_back(vBLB);
+		//Second triangle
+		m_indices.push_back(vBLB);
+		m_indices.push_back(vTRB);
+		m_indices.push_back(vBRB);
+
+		/*
 		// First Triangle
 		m_vertices.push_back(vertexTopLeftBackPoint);
 		m_vertices.push_back(vertexTopRightBackPoint);
@@ -202,10 +273,21 @@ void MyMesh::InitCube()
 		m_vertices.push_back(vertexBottomLeftBackPoint);
 		m_vertices.push_back(vertexTopRightBackPoint);
 		m_vertices.push_back(vertexBottomRightBackPoint);
+		*/
 	}
 	
 	// 3 - LEFT FACE
 	{
+		//First triangle
+		m_indices.push_back(vTLF);
+		m_indices.push_back(vTLB);
+		m_indices.push_back(vBLB);
+		//Second triangle
+		m_indices.push_back(vBLB);
+		m_indices.push_back(vBLF);
+		m_indices.push_back(vTLF);
+
+		/*
 		// First Triangle
 		m_vertices.push_back(vertexTopLeftFrontPoint);
 		m_vertices.push_back(vertexTopLeftBackPoint);
@@ -214,10 +296,21 @@ void MyMesh::InitCube()
 		m_vertices.push_back(vertexBottomLeftBackPoint);
 		m_vertices.push_back(vertexBottomLeftFrontPoint);
 		m_vertices.push_back(vertexTopLeftFrontPoint);
+		*/
 	}
 
 	// 4 - RIGHT FACE
 	{
+		//First triangle
+		m_indices.push_back(vTRF);
+		m_indices.push_back(vBRF);
+		m_indices.push_back(vTRB);
+		//Second triangle
+		m_indices.push_back(vTRB);
+		m_indices.push_back(vBRF);
+		m_indices.push_back(vBRB);
+
+		/*
 		// First Triangle
 		m_vertices.push_back(vertexTopRightFrontPoint);
 		m_vertices.push_back(vertexBottomRightFrontPoint);
@@ -227,10 +320,21 @@ void MyMesh::InitCube()
 		m_vertices.push_back(vertexTopRightBackPoint);
 		m_vertices.push_back(vertexBottomRightFrontPoint);
 		m_vertices.push_back(vertexBottomRightBackPoint);
+		*/
 	}
 
 	// 5 - TOP FACE
 	{
+		//First triangle
+		m_indices.push_back(vTRB);
+		m_indices.push_back(vTLB);
+		m_indices.push_back(vTLF);
+		//Second triangle
+		m_indices.push_back(vTRB);
+		m_indices.push_back(vTLF);
+		m_indices.push_back(vTRF);
+
+		/*
 		// First Triangle
 		m_vertices.push_back(vertexTopRightBackPoint);
 		m_vertices.push_back(vertexTopLeftBackPoint);
@@ -239,10 +343,21 @@ void MyMesh::InitCube()
 		m_vertices.push_back(vertexTopRightBackPoint);
 		m_vertices.push_back(vertexTopLeftFrontPoint);
 		m_vertices.push_back(vertexTopRightFrontPoint);
+		*/
 	}
 	
 	// 6 - BOTTOM FACE
 	{
+		//First triangle
+		m_indices.push_back(vBRF);
+		m_indices.push_back(vBLF);
+		m_indices.push_back(vBLB);
+		//Second triangle
+		m_indices.push_back(vBRF);
+		m_indices.push_back(vBLB);
+		m_indices.push_back(vBRB);
+
+		/*
 		// First Triangle
 		m_vertices.push_back(vertexBottomRightFrontPoint);
 		m_vertices.push_back(vertexBottomLeftFrontPoint);
@@ -251,11 +366,12 @@ void MyMesh::InitCube()
 		m_vertices.push_back(vertexBottomRightFrontPoint);
 		m_vertices.push_back(vertexBottomLeftBackPoint);
 		m_vertices.push_back(vertexBottomRightBackPoint);
+		*/
 	}
-	//------------------------------
-
-	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);
-	//glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);	// first three vertices, for testing triangle rendering
+	
+	////glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);	// first three vertices, for testing triangle rendering
+	//glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(vertex), &m_vertices[0], GL_STATIC_DRAW);	//moved up, before filling VIO
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW);
 
 	// Count the attributes
 	int attributeCount = 2;
@@ -297,9 +413,22 @@ void MyMesh::Draw()
 	// Read uniforms and send values
 	GLuint MVP = glGetUniformLocation(m_uShaderProgramId, "transform");	// Model View Projection
 	glUniformMatrix4fv(MVP, 1, GL_FALSE, glm::value_ptr(m4Projection * m4View * m4Model));
-
+	
 	// Draw
-	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+	//glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());	//using plain VBO
+	
+	/*
+	if (m_indices.size() > 0) 
+	{
+		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_SHORT, (void*)(0));	//draw using VIO	//more efficient way of rendering
+	}
+	else
+	{
+		glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());	//using plain VBO
+	}
+	*/
+
+	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_SHORT, (void*)(0));	//draw using VIO	//more efficient way of rendering
 
 	glBindVertexArray(0);		//unbind
 }

@@ -50,9 +50,11 @@ private:
 
 private:
 	std::vector<vertex> m_vertices;
+	std::vector<unsigned short> m_indices;	//nvm the following	//vector of unsigned 16-bit integers	//glm has this bc generally you don't have more than 65000 vertices in an object (max value of 16 bit)
 	GLuint m_uShaderProgramId = 0;
 	GLuint m_uVAO = 0;
 	GLuint m_uVBO = 0;
+	GLuint m_uVIO = 0;	//index buffer
 
 	float m_scale = 1.0f;
 };
