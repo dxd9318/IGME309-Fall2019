@@ -37,6 +37,17 @@ void Application::Update(void)
 		m_m4Steve = glm::toMat4(qSLERP);
 	}
 #pragma endregion
+#pragma region LERP
+	if (true)
+	{
+		// DOES NOT WORK! //LERP doesn't work for rotation. This is why we use SLERP
+		matrix4 m4OrientZ1 = glm::rotate(IDENTITY_M4, 0.0f, vector3(0.0f, 0.0f, 1.0f));
+		matrix4 m4OrientZ2 = glm::rotate(IDENTITY_M4, glm::radians(90.9f), vector3(0.0f, 0.0f, 1.0f));
+		float fPercentage = MapValue(fTimer, 0.0f, 5.0f, 0.0f, 1.0f);
+		auto m4Rotation = glm::mix(m4OrientZ1, m4OrientZ2, fPercentage);
+		m_m4Steve = m4Rotation;
+	}
+#pragma endregion
 #pragma region translate vector orientation into a matrix
 	if (false)
 	{
@@ -45,13 +56,17 @@ void Application::Update(void)
 		matrix4 m4OrientZ = glm::rotate(IDENTITY_M4, glm::radians(m_v3Orientation.z), vector3(0.0f, 0.0f, 1.0f));
 
 		matrix4 m4Orientation = m4OrientX * m4OrientY * m4OrientZ;
-		m_m4Steve = glm::toMat4(m_qOrientation);
+		//m_m4Steve = glm::toMat4(m_qOrientation);	//seems to have been left in by mistake?
+
+		m_m4Steve = m4Orientation;
+		// notice how holding two rotation direction keys at the same time yields a weird "bowtie" like path of rotation.
 	}
 #pragma endregion
 #pragma region orientation using quaternions
-	if (true)
+	if (false)
 	{
-		m_m4Steve = glm::toMat4(m_qOrientation);
+		m_m4Steve = glm::toMat4(m_qOrientation);	
+		// notice how holding two rotation direction keys at the same time yields conical rotation around an axis between the two selected rotation axes.
 	}
 #pragma endregion
 	
