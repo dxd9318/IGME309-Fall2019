@@ -15,11 +15,13 @@ Date: 2017/05
 class Application
 {
 	vector3 m_v3Orientation; //orientation for the Model in vectors
-	Simplex::Model* m_pModel = nullptr; //Model to display
+	//BasicX::Model* m_pModel = nullptr; //Model to display	//commented out for now as we switch from Simplex to BasicX
 	matrix4 m_m4Steve; //Model to world matrix for Steve
 	quaternion m_qOrientation; //orientation for the Model in quaternions
 
 	String m_sProgrammer = "Diana Diaz - dxd9318@g.rit.edu";
+
+	MyMesh* m_pCone = nullptr;
 
 private:
 	static ImGuiObject gui; //GUI object

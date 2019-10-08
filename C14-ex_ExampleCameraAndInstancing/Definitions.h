@@ -8,13 +8,12 @@ Date: 2017/06
 //#include <vld.h>
 
 //#define USEBASICX
-#ifdef USEBASICX
-#include "BasicX\BasicX.h"
-using namespace BasicX;
-#else
+
+//#include "BasicX\BasicX.h"
+//using namespace BasicX;
+
 #include "Simplex\Simplex.h"
 using namespace Simplex;
-#endif // USEBASICX
 
 #include "SFML\Window.hpp"
 #include "SFML\Graphics.hpp"
