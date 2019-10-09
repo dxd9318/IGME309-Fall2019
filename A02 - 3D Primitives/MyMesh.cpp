@@ -275,8 +275,25 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	// -------------------------------
+	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
+	float foundAngle = 360.0f / a_nSubdivisions;
+	float foundAngleRads = glm::radians(foundAngle);
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		//Circle Base		//careful, circle is only rendered on one side!
+		AddTri(
+			v3Center,	//point A (center of circle)
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0),	//point C
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0));	//point B	//I've switched points B and C so that the circle renders on of outside of the shape.
+
+
+		//Cone Tip
+		AddTri(
+			vector3(v3Center.x, v3Center.y, v3Center.z + a_fHeight),	//point D (tip)
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0),	//point E
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0));	//point F
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -299,8 +316,20 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	// -------------------------------
+	//Circle Base		//careful, circle is only rendered on one side!
+	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
+	float foundAngle = 360.0f / a_nSubdivisions;
+	float foundAngleRads = glm::radians(foundAngle);
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		AddTri(
+			v3Center,	//point A (center of circle)
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0),	//point B
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0));	//point C
+	}
+
+
 	// -------------------------------
 
 	// Adding information about color
