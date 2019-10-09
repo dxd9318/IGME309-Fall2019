@@ -317,19 +317,26 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// -------------------------------
-	//Circle Base		//careful, circle is only rendered on one side!
+	//Circle Base		//careful, circle is only rendered on one side!		//MIGHT HAVE TO UPDATE TO CENTER HEIGHTS ON ALL PRIMITIVES
 	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
 	float foundAngle = 360.0f / a_nSubdivisions;
 	float foundAngleRads = glm::radians(foundAngle);
 
 	for (int i = 0; i < a_nSubdivisions; i++) {
+		//Circle bottom
 		AddTri(
 			v3Center,	//point A (center of circle)
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0),	//point B
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0));	//point C
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0),	//point C
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0));	//point B
+
+		//Circle top
+		AddTri(
+			vector3(v3Center.x, v3Center.y, v3Center.z + a_fHeight),	//point D (center of circle)
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, a_fHeight),	//point E
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, a_fHeight));	//point F
+	
+		//CREATE CUBOIDS BETWEEN TOP AND BOTTOM CIRCLES
 	}
-
-
 	// -------------------------------
 
 	// Adding information about color
