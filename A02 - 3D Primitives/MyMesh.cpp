@@ -379,34 +379,33 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		// Ring bottom	// WILL USE QUADS INSTEAD OF TRIANGLES
-		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z - (a_fHeight / 2.0f)),	//point A (center of circle)
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -(a_fHeight / 2.0f)),	//point C
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -(a_fHeight / 2.0f)));	//point B
+		// Ring bottom		// Inner side then outer side
+		AddQuad(
+			vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, -(a_fHeight / 2.0f)),				// B1		// First Tri B1->C1->B2
+			vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, -(a_fHeight / 2.0f)),	// C1
+			vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, -(a_fHeight / 2.0f)),				// B2		// First Tri B2->C1->C2
+			vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, -(a_fHeight / 2.0f)));	// C2
 
-		// Ring top		// WILL USE QUADS INSTEAD OF TRIANGLES
-		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z + (a_fHeight / 2.0f)),	//point D (center of circle)
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, (a_fHeight / 2.0f)),	//point E
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, (a_fHeight / 2.0f)));	//point F
+		// Ring top			// Outer side then inner side
+		AddQuad(
+			vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, (a_fHeight / 2.0f)),				// B3		// First Tri B3->C3->B4
+			vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, (a_fHeight / 2.0f)),	// C3
+			vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, (a_fHeight / 2.0f)),				// B4		// First Tri B4->C3->C4
+			vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, (a_fHeight / 2.0f)));	// C4
 
-
-
-		// Outside panels 
+		// Outside panels	// Bottom to top
 		AddQuad(
 			vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, -(a_fHeight / 2.0f)),				// B		// First Tri B->C->E
 			vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, -(a_fHeight / 2.0f)),	// C
 			vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, (a_fHeight / 2.0f)),				// E		// Second Tri E->C->F
 			vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, (a_fHeight / 2.0f)));	// F
 
-		// Inside panels	// ORDER OF POINTS WILL BE INVERTED FROM OUTSIDE
+		// Inside panels	// Bottom to top	// ORDER OF POINTS INVERTED FROM OUTSIDE
 		AddQuad(
 			vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, -(a_fHeight / 2.0f)),	// C
-			vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, -(a_fHeight / 2.0f)),				// B		// First Tri C->B->E
+			vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, -(a_fHeight / 2.0f)),				// B		// First Tri C->B->F
 			vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, (a_fHeight / 2.0f)),	// F
 			vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, (a_fHeight / 2.0f)));				// E		// Second Tri F->B->E
-
 	}
 	// -------------------------------
 
