@@ -515,6 +515,9 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	float foundAngle = 360.0f / a_nSubdivisions;
 	float foundAngleRads = glm::radians(foundAngle);
 
+
+	//Issue with this method is the top and bottom circles will be flat, not what I want.
+	//Need to find a way to get the angle for x, y, and z coordinates. How to use trig to represent a point on a sphere?
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		// Top circle
@@ -523,7 +526,7 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
 			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
 
-		// Multiple rings, should be created one column per loop at a time, connecting the triangles of top and bottom circles
+		// Multiple rings, as many as there are a_nSubdivisions. Should be created one column per loop at a time, connecting the triangles of top and bottom circles
 		// might need another for loop to construct column. not sure how to string quads together if i do that though
 
 			//first quad will use B and C points of triangle[i] of top circle
@@ -537,6 +540,13 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -a_fRadius),	// point C
 			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -a_fRadius));	// point B	// Switched points B and C so this circle renders on outside of primitive
 	}
+
+
+
+	//maybe instead use the dodecahedron method
+	// create circles, with as many sides as the indicated a_nSubdivisions. then fit these together somehow?
+	// if a_nSubdivisions == 3, form a pyramid. 4, cube. 5, dodecahedron. 6, . but what if input is 2?
+
 	// -------------------------------
 
 	// Adding information about color
