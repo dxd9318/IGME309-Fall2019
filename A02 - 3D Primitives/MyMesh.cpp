@@ -280,19 +280,19 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	float foundAngle = 360.0f / a_nSubdivisions;
 	float foundAngleRads = glm::radians(foundAngle);
 
-	for (int i = 0; i < a_nSubdivisions; i++) {
+	for (int i = 0; i < a_nSubdivisions; i++) 
+	{
 		//Circle Base		//careful, circle is only rendered on one side!
 		AddTri(
-			v3Center,	//point A (center of circle)
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0),	//point C
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0));	//point B	//I've switched points B and C so that the circle renders on of outside of the shape.
-
+			vector3(v3Center.x, v3Center.y, v3Center.z - (a_fHeight / 2.0f)),	//point A (center of circle)	//height modified to center primitive around it center
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -(a_fHeight / 2.0f)),	//point C
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -(a_fHeight / 2.0f)));	//point B	//I've switched points B and C so that the circle renders on of outside of the shape.
 
 		//Cone Tip
 		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z + a_fHeight),	//point D (tip)
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0),	//point E
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0));	//point F
+			vector3(v3Center.x, v3Center.y, v3Center.z + (a_fHeight / 2.0f)),	//point D (tip)
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -(a_fHeight / 2.0f)),	//point E
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -(a_fHeight / 2.0f)));	//point F
 	}
 	// -------------------------------
 
@@ -317,25 +317,31 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// -------------------------------
-	//Circle Base		//careful, circle is only rendered on one side!		//MIGHT HAVE TO UPDATE TO CENTER HEIGHTS ON ALL PRIMITIVES
+	//Circle Base		//careful, circle is only rendered on one side!
 	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
 	float foundAngle = 360.0f / a_nSubdivisions;
 	float foundAngleRads = glm::radians(foundAngle);
 
-	for (int i = 0; i < a_nSubdivisions; i++) {
+	for (int i = 0; i < a_nSubdivisions; i++) 
+	{
 		//Circle bottom
 		AddTri(
-			v3Center,	//point A (center of circle)
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, 0),	//point C
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, 0));	//point B
+			vector3(v3Center.x, v3Center.y, v3Center.z - (a_fHeight / 2.0f)),	//point A (center of circle)
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -(a_fHeight / 2.0f)),	//point C
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -(a_fHeight / 2.0f)));	//point B
 
 		//Circle top
 		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z + a_fHeight),	//point D (center of circle)
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, a_fHeight),	//point E
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, a_fHeight));	//point F
+			vector3(v3Center.x, v3Center.y, v3Center.z + (a_fHeight / 2.0f)),	//point D (center of circle)
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, (a_fHeight / 2.0f)),	//point E
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, (a_fHeight / 2.0f)));	//point F
 	
-		//CREATE CUBOIDS BETWEEN TOP AND BOTTOM CIRCLES
+		//CREATE QUADS BETWEEN TOP AND BOTTOM CIRCLES
+		AddQuad(
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -(a_fHeight / 2.0f)),				// B
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -(a_fHeight / 2.0f)),	// C
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, (a_fHeight / 2.0f)),				// E
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, (a_fHeight / 2.0f)));	// F
 	}
 	// -------------------------------
 
