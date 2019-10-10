@@ -439,6 +439,52 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 	// Replace this with your code
 	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+
+	/*
+	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
+	float foundAngle = 360.0f / a_nSubdivisionsA;
+	float foundAngleRads = glm::radians(foundAngle);
+
+	for (int j = 0; j < a_nSubdivisionsB; j++)
+	{
+		for (int i = 0; i < a_nSubdivisionsA; i++)
+		{
+			//a_nSubdivisionsA determines number of segments in a ring
+			//a_nSubdivisionsB determines number of rings
+
+
+
+
+			// Ring bottom		// Inner side then outer side
+			AddQuad(
+				vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, -(a_fHeight / 2.0f)),				// B1		// First Tri B1->C1->B2
+				vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, -(a_fHeight / 2.0f)),	// C1
+				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, -(a_fHeight / 2.0f)),				// B2		// First Tri B2->C1->C2
+				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, -(a_fHeight / 2.0f)));	// C2
+
+			// Ring top			// Outer side then inner side
+			AddQuad(
+				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, (a_fHeight / 2.0f)),				// B3		// First Tri B3->C3->B4
+				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, (a_fHeight / 2.0f)),	// C3
+				vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, (a_fHeight / 2.0f)),				// B4		// First Tri B4->C3->C4
+				vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, (a_fHeight / 2.0f)));	// C4
+
+			// Outside panels	// Bottom to top
+			AddQuad(
+				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, -(a_fHeight / 2.0f)),				// B		// First Tri B->C->E
+				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, -(a_fHeight / 2.0f)),	// C
+				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, (a_fHeight / 2.0f)),				// E		// Second Tri E->C->F
+				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, (a_fHeight / 2.0f)));	// F
+
+			// Inside panels	// Bottom to top	// ORDER OF POINTS INVERTED FROM OUTSIDE
+			AddQuad(
+				vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, -(a_fHeight / 2.0f)),	// C
+				vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, -(a_fHeight / 2.0f)),				// B		// First Tri C->B->F
+				vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, (a_fHeight / 2.0f)),	// F
+				vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, (a_fHeight / 2.0f)));				// E		// Second Tri F->B->E
+		}
+	}*/
+
 	// -------------------------------
 
 	// Adding information about color
@@ -462,8 +508,35 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	// -------------------------------
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
+
+	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
+	float foundAngle = 360.0f / a_nSubdivisions;
+	float foundAngleRads = glm::radians(foundAngle);
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// Top circle
+		AddTri(
+			vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	// height modified to center primitive around it center
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
+
+		// Multiple rings, should be created one column per loop at a time, connecting the triangles of top and bottom circles
+		// might need another for loop to construct column. not sure how to string quads together if i do that though
+
+			//first quad will use B and C points of triangle[i] of top circle
+
+			
+			//last quad will use C and B points of triangle[i] of bottom circle
+
+		// Bottom circle
+		AddTri(
+			vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point A (center of circle)	// height modified to center primitive around it center
+			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -a_fRadius),	// point C
+			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -a_fRadius));	// point B	// Switched points B and C so this circle renders on outside of primitive
+	}
 	// -------------------------------
 
 	// Adding information about color
