@@ -512,19 +512,28 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 
 	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
-	float foundAngle = 360.0f / a_nSubdivisions;
-	float foundAngleRads = glm::radians(foundAngle);
-
+	float foundTheta = 180.0f / a_nSubdivisions;		//determine vertical angle, which should only swing between up and down, not all the way around, hence 180 degrees.
+	float foundThetaRads = glm::radians(foundTheta);
+	float foundPhi = 360.0f / a_nSubdivisions;			//determines horizontal angle
+	float foundPhiRads = glm::radians(foundPhi);
 
 	//Issue with this method is the top and bottom circles will be flat, not what I want.
 	//Need to find a way to get the angle for x, y, and z coordinates. How to use trig to represent a point on a sphere?
+	// https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/spherical-coordinates-and-trigonometric-functions
+	// Turns out I need to calculate not one but two angles, one for the vertical plane and one for the horizontal plane.
+	// theta = vertical angle
+	// phi = horizontal angle
+	// x = r * cos(phi)sin(theta)		// y = r * sin(phi)sin(theta)		// z = r * cos(theta)
+
+	//still need to figure out the math/logic for creating the columns, or rows
+
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		// Top circle
 		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	// height modified to center primitive around it center
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
+			vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	//
+			vector3(cos(foundThetaRads * i) * a_fRadius, sin(foundThetaRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
+			vector3(cos(foundThetaRads * (i + 1)) * a_fRadius, sin(foundThetaRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
 
 		// Multiple rings, as many as there are a_nSubdivisions. Should be created one column per loop at a time, connecting the triangles of top and bottom circles
 		// might need another for loop to construct column. not sure how to string quads together if i do that though
@@ -536,9 +545,9 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 		// Bottom circle
 		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point A (center of circle)	// height modified to center primitive around it center
-			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, -a_fRadius),	// point C
-			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -a_fRadius));	// point B	// Switched points B and C so this circle renders on outside of primitive
+			vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point D (center of circle)	//
+			vector3(cos(foundThetaRads * (i + 1)) * a_fRadius, sin(foundThetaRads * (i + 1)) * a_fRadius, -a_fRadius),	// point E
+			vector3(cos(foundThetaRads * i) * a_fRadius, sin(foundThetaRads * i) * a_fRadius, -a_fRadius));	// point F
 	}
 
 
