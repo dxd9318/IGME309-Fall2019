@@ -523,38 +523,63 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	// Turns out I need to calculate not one but two angles, one for the vertical plane and one for the horizontal plane.
 	// theta = vertical angle
 	// phi = horizontal angle
-	// x = r * cos(phi)sin(theta)		// y = r * sin(phi)sin(theta)		// z = r * cos(theta)
+	// x = r * cos(phi)sin(theta)//z		// y = r * sin(phi)sin(theta)//x		// z = r * cos(theta)//y		//example's coord system doesn't match the one we're using for opengl
 
 	//still need to figure out the math/logic for creating the columns, or rows
 
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		// Top circle
-		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	//
-			vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
-			vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
+		//AddTri(
+		//	vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	//
+		//	vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
+		//	vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
 
 		// Multiple rings, as many as there are a_nSubdivisions. Should be created one column per loop at a time, connecting the triangles of top and bottom circles
 		// might need another for loop to construct column. not sure how to string quads together if i do that though
 			
-		for (int j = 0; j < a_nSubdivisions; i++) 
+		for (int j = 0; j < (a_nSubdivisions / 2); j++)
 		{
-			//first quad will use B and C points of triangle[i] of top circle
+			//first quad will use b and c points of triangle[i] of top circle
+
 			AddQuad(
 				//similar to adding a side panel that connects the top and bottom circles of the cylinder
 				// except this side "panel" is in segments (from top to bottom), and each segment is angled slightly differently	
-				// this is angling is by theta, so theta*j
+				// this angling is by theta, so (theta * j)
 					//but the trouble here is there isn't just one coordinate that changes every time. 
-			);
-			//last quad will use C and B points of triangle[i] of bottom circle
+				//CD
+				//AB
+
+				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundThetaRads * j) * a_fRadius),	//quad B	//circle's tri is D
+
+				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundThetaRads * j) * a_fRadius),				//quad A	//circle's tri is C
+
+				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundThetaRads * (j - 1)) * a_fRadius),	//quad D
+
+				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundThetaRads * (j - 1)) * a_fRadius)				//quad C
+
+				
+				
+				
+				
+				);	
+
+			//last quad will use E and F points of triangle[i] of bottom circle
 		}
 		
-		// Bottom circle
-		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point D (center of circle)	//
-			vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, -a_fRadius),	// point E
-			vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, -a_fRadius));	// point F
+		//// Bottom circle
+		//AddTri(
+		//	vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point D (center of circle)	//
+		//	vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, -a_fRadius),	// point E
+		//	vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, -a_fRadius));	// point F
 	}
 
 
