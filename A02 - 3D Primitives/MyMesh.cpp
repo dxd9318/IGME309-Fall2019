@@ -121,7 +121,7 @@ void MyMesh::Render(matrix4 a_mProjection, matrix4 a_mView, matrix4 a_mModel)
 {
 	// Use the buffer and shader
 	GLuint nShader = m_pShaderMngr->GetShaderID("Basic");
-	glUseProgram(nShader); 
+	glUseProgram(nShader);
 
 	//Bind the VAO of this object
 	glBindVertexArray(m_VAO);
@@ -133,11 +133,11 @@ void MyMesh::Render(matrix4 a_mProjection, matrix4 a_mView, matrix4 a_mModel)
 	//Final Projection of the Camera
 	matrix4 m4MVP = a_mProjection * a_mView * a_mModel;
 	glUniformMatrix4fv(MVP, 1, GL_FALSE, glm::value_ptr(m4MVP));
-	
+
 	//Solid
 	glUniform3f(wire, -1.0f, -1.0f, -1.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glDrawArrays(GL_TRIANGLES, 0, m_uVertexCount);  
+	glDrawArrays(GL_TRIANGLES, 0, m_uVertexCount);
 
 	//Wire
 	glUniform3f(wire, 1.0f, 0.0f, 1.0f);
@@ -186,15 +186,15 @@ void MyMesh::GenerateCube(float a_fSize, vector3 a_v3Color)
 	//|  |
 	//0--1
 
-	vector3 point0(-fValue,-fValue, fValue); //0
-	vector3 point1( fValue,-fValue, fValue); //1
-	vector3 point2( fValue, fValue, fValue); //2
+	vector3 point0(-fValue, -fValue, fValue); //0
+	vector3 point1(fValue, -fValue, fValue); //1
+	vector3 point2(fValue, fValue, fValue); //2
 	vector3 point3(-fValue, fValue, fValue); //3
 
-	vector3 point4(-fValue,-fValue,-fValue); //4
-	vector3 point5( fValue,-fValue,-fValue); //5
-	vector3 point6( fValue, fValue,-fValue); //6
-	vector3 point7(-fValue, fValue,-fValue); //7
+	vector3 point4(-fValue, -fValue, -fValue); //4
+	vector3 point5(fValue, -fValue, -fValue); //5
+	vector3 point6(fValue, fValue, -fValue); //6
+	vector3 point7(-fValue, fValue, -fValue); //7
 
 	//F
 	AddQuad(point0, point1, point3, point2);
@@ -280,7 +280,7 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	float foundAngle = 360.0f / a_nSubdivisions;
 	float foundAngleRads = glm::radians(foundAngle);
 
-	for (int i = 0; i < a_nSubdivisions; i++) 
+	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		// Circle Base		// Careful, circle is only rendered on one side!
 		AddTri(
@@ -322,7 +322,7 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	float foundAngle = 360.0f / a_nSubdivisions;
 	float foundAngleRads = glm::radians(foundAngle);
 
-	for (int i = 0; i < a_nSubdivisions; i++) 
+	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		// Circle bottom
 		AddTri(
@@ -335,7 +335,7 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 			vector3(v3Center.x, v3Center.y, v3Center.z + (a_fHeight / 2.0f)),	//point D (center of circle)
 			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, (a_fHeight / 2.0f)),	//point E
 			vector3(cos(foundAngleRads * (i + 1)) * a_fRadius, sin(foundAngleRads * (i + 1)) * a_fRadius, (a_fHeight / 2.0f)));	//point F
-	
+
 		// Side panels
 		AddQuad(
 			vector3(cos(foundAngleRads * i) * a_fRadius, sin(foundAngleRads * i) * a_fRadius, -(a_fHeight / 2.0f)),				// B		// First Tri B->C->E
@@ -444,38 +444,30 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	vector3 v3Center = vector3(0.0f, 0.0f, 0.0f);
 	float foundAngle = 360.0f / a_nSubdivisionsA;
 	float foundAngleRads = glm::radians(foundAngle);
-
 	for (int j = 0; j < a_nSubdivisionsB; j++)
 	{
 		for (int i = 0; i < a_nSubdivisionsA; i++)
 		{
 			//a_nSubdivisionsA determines number of segments in a ring
 			//a_nSubdivisionsB determines number of rings
-
-
-
-
 			// Ring bottom		// Inner side then outer side
 			AddQuad(
 				vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, -(a_fHeight / 2.0f)),				// B1		// First Tri B1->C1->B2
 				vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, -(a_fHeight / 2.0f)),	// C1
 				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, -(a_fHeight / 2.0f)),				// B2		// First Tri B2->C1->C2
 				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, -(a_fHeight / 2.0f)));	// C2
-
 			// Ring top			// Outer side then inner side
 			AddQuad(
 				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, (a_fHeight / 2.0f)),				// B3		// First Tri B3->C3->B4
 				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, (a_fHeight / 2.0f)),	// C3
 				vector3(cos(foundAngleRads * i) * a_fInnerRadius, sin(foundAngleRads * i) * a_fInnerRadius, (a_fHeight / 2.0f)),				// B4		// First Tri B4->C3->C4
 				vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, (a_fHeight / 2.0f)));	// C4
-
 			// Outside panels	// Bottom to top
 			AddQuad(
 				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, -(a_fHeight / 2.0f)),				// B		// First Tri B->C->E
 				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, -(a_fHeight / 2.0f)),	// C
 				vector3(cos(foundAngleRads * i) * a_fOuterRadius, sin(foundAngleRads * i) * a_fOuterRadius, (a_fHeight / 2.0f)),				// E		// Second Tri E->C->F
 				vector3(cos(foundAngleRads * (i + 1)) * a_fOuterRadius, sin(foundAngleRads * (i + 1)) * a_fOuterRadius, (a_fHeight / 2.0f)));	// F
-
 			// Inside panels	// Bottom to top	// ORDER OF POINTS INVERTED FROM OUTSIDE
 			AddQuad(
 				vector3(cos(foundAngleRads * (i + 1)) * a_fInnerRadius, sin(foundAngleRads * (i + 1)) * a_fInnerRadius, -(a_fHeight / 2.0f)),	// C
@@ -523,31 +515,63 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	// Turns out I need to calculate not one but two angles, one for the vertical plane and one for the horizontal plane.
 	// theta = vertical angle
 	// phi = horizontal angle
-	// x = r * cos(phi)sin(theta)		// y = r * sin(phi)sin(theta)		// z = r * cos(theta)
+	// x = r * cos(phi)sin(theta)//z		// y = r * sin(phi)sin(theta)//x		// z = r * cos(theta)//y		//example's coord system doesn't match the one we're using for opengl
 
 	//still need to figure out the math/logic for creating the columns, or rows
 
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		// Top circle
-		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	//
-			vector3(cos(foundThetaRads * i) * a_fRadius, sin(foundThetaRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
-			vector3(cos(foundThetaRads * (i + 1)) * a_fRadius, sin(foundThetaRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
+		//AddTri(
+		//	vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	//
+		//	vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
+		//	vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
 
 		// Multiple rings, as many as there are a_nSubdivisions. Should be created one column per loop at a time, connecting the triangles of top and bottom circles
 		// might need another for loop to construct column. not sure how to string quads together if i do that though
 
-			//first quad will use B and C points of triangle[i] of top circle
+		for (int j = 0; j < (a_nSubdivisions / 2); j++)
+		{
+			//first quad will use b and c points of triangle[i] of top circle
 
-			
-			//last quad will use C and B points of triangle[i] of bottom circle
+			AddQuad(
+				//similar to adding a side panel that connects the top and bottom circles of the cylinder
+				// except this side "panel" is in segments (from top to bottom), and each segment is angled slightly differently	
+				// this angling is by theta, so (theta * j)
+					//but the trouble here is there isn't just one coordinate that changes every time. 
+				//CD
+				//AB
 
-		// Bottom circle
-		AddTri(
-			vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point D (center of circle)	//
-			vector3(cos(foundThetaRads * (i + 1)) * a_fRadius, sin(foundThetaRads * (i + 1)) * a_fRadius, -a_fRadius),	// point E
-			vector3(cos(foundThetaRads * i) * a_fRadius, sin(foundThetaRads * i) * a_fRadius, -a_fRadius));	// point F
+				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundThetaRads * j) * a_fRadius),	//quad B	//circle's tri is D
+
+				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundThetaRads * j) * a_fRadius),				//quad A	//circle's tri is C
+
+				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundThetaRads * (j - 1)) * a_fRadius),	//quad D
+
+				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundThetaRads * (j - 1)) * a_fRadius)				//quad C
+
+
+
+
+
+			);
+
+			//last quad will use E and F points of triangle[i] of bottom circle
+		}
+
+		//// Bottom circle
+		//AddTri(
+		//	vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point D (center of circle)	//
+		//	vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, -a_fRadius),	// point E
+		//	vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, -a_fRadius));	// point F
 	}
 
 
