@@ -509,77 +509,105 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	float foundPhi = 360.0f / a_nSubdivisions;			//determines horizontal angle
 	float foundPhiRads = glm::radians(foundPhi);
 
-	//Issue with this method is the top and bottom circles will be flat, not what I want.
-	//Need to find a way to get the angle for x, y, and z coordinates. How to use trig to represent a point on a sphere?
-	// https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/spherical-coordinates-and-trigonometric-functions
-	// Turns out I need to calculate not one but two angles, one for the vertical plane and one for the horizontal plane.
-	// theta = vertical angle
-	// phi = horizontal angle
-	// x = r * cos(phi)sin(theta)//z		// y = r * sin(phi)sin(theta)//x		// z = r * cos(theta)//y		//example's coord system doesn't match the one we're using for opengl
+	/*
+	// Issue with this method is the top and bottom circles will be flat, not what I want.
+	// Need to find a way to get the angle for x, y, and z coordinates. How to use trig to represent a point on a sphere?
+		// https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/spherical-coordinates-and-trigonometric-functions
+		// Turns out I need to calculate not one but two angles, one for the vertical plane and one for the horizontal plane.
+		// theta = vertical angle
+		// phi = horizontal angle
+		// x = r * cos(phi)sin(theta)//z		// y = r * sin(phi)sin(theta)//x		// z = r * cos(theta)//y		
+			//example's coord system doesn't match the one we're using for opengl
+	*/
 
-	//still need to figure out the math/logic for creating the columns, or rows
-
+	//handles incrementing across "latitudes" of sphere, ie.left-right rendering
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
+		/*
+		// Originally commented out the top and bottom circles code I had for this function so I can see what was going on with the rings,
+		// but then I realized the rings code is creating top and bottom points as well, so I don't actually need these circles.
 		// Top circle
-		//AddTri(
-		//	vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	//
-		//	vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
-		//	vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
+		AddTri(
+			vector3(v3Center.x, v3Center.y, v3Center.z + a_fRadius),	// point A (center of circle)	//
+			vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, a_fRadius),	// point B	// Switched points B and C so this circle renders on outside of primitive
+			vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, a_fRadius));	// point C
+		*/
 
-		// Multiple rings, as many as there are a_nSubdivisions. Should be created one column per loop at a time, connecting the triangles of top and bottom circles
-		// might need another for loop to construct column. not sure how to string quads together if i do that though
-
-		for (int j = 0; j < (a_nSubdivisions / 2); j++)
-		{
-			//first quad will use b and c points of triangle[i] of top circle
-
-			AddQuad(
-				//similar to adding a side panel that connects the top and bottom circles of the cylinder
+		// Multiple rings, as many as there are a_nSubdivisions. Created one column per loop at a time, connecting the triangles of top and bottom circles
+		// Similar to cylinder, where I made a side panel that connects the triangles of the top and bottom circles
 				// except this side "panel" is in segments (from top to bottom), and each segment is angled slightly differently	
 				// this angling is by theta, so (theta * j)
-					//but the trouble here is there isn't just one coordinate that changes every time. 
+					//but the trouble here is there isn't just one coordinate that changes every time.
+
+		//handles incrementing down "longitudes" of sphere, ie. up-down rendering	//needs to be done one hemisphere at a time or it'll invert (render the inside), not what I want
+		for (int j = 0; j < (a_nSubdivisions / 2); j++)	//(int j = (a_nSubdivisions / 2); j > 0; j--)	
+		{
+			 //Currently BADC
 				//CD
 				//AB
 
+			AddQuad(
+				
+
 				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
 					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
-					sin(foundThetaRads * j) * a_fRadius),	//quad B	//circle's tri is D
+					sin(foundThetaRads * j) * a_fRadius),	//quad ptB
 
 				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
 					sin(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
-					sin(foundThetaRads * j) * a_fRadius),				//quad A	//circle's tri is C
+					sin(foundThetaRads * j) * a_fRadius),	//quad ptA
 
 				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
 					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
-					sin(foundThetaRads * (j - 1)) * a_fRadius),	//quad D
+					sin(foundThetaRads * (j - 1)) * a_fRadius),		//quad ptD
 
 				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
 					sin(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
-					sin(foundThetaRads * (j - 1)) * a_fRadius)				//quad C
-
-
-
-
+					sin(foundThetaRads * (j - 1)) * a_fRadius)		//quad ptC
 
 			);
-
-			//last quad will use E and F points of triangle[i] of bottom circle
 		}
 
-		//// Bottom circle
-		//AddTri(
-		//	vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point D (center of circle)	//
-		//	vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, -a_fRadius),	// point E
-		//	vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, -a_fRadius));	// point F
+
+		//handles incrementing down "longitudes" of sphere, ie. up-down rendering	//needs to be done one hemisphere at a time or it'll invert (render the inside), not what I want
+		for (int j = (a_nSubdivisions / 2); j < (a_nSubdivisions); j++)	//(int j = (a_nSubdivisions / 2); j > 0; j--)	
+		{
+			//Currently BADC
+			   //CD
+			   //AB
+
+			AddQuad(
+
+
+				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundThetaRads * j) * a_fRadius),	//quad ptB
+
+				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundPhiRads * i) * sin(foundThetaRads * j) * a_fRadius,
+					sin(foundThetaRads * j) * a_fRadius),	//quad ptA
+
+				vector3(cos(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundPhiRads * (i + 1)) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundThetaRads * (j - 1)) * a_fRadius),		//quad ptD
+
+				vector3(cos(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundPhiRads * i) * sin(foundThetaRads * (j + 1)) * a_fRadius,
+					sin(foundThetaRads * (j - 1)) * a_fRadius)		//quad ptC
+
+			);
+		}
+
+		/*
+		// Originally commented out the top and bottom circles code I had for this function so I can see what was going on with the rings,
+		// but then I realized the rings code is creating top and bottom points as well, so I don't actually need these circles.
+		// Bottom circle
+		AddTri(
+			vector3(v3Center.x, v3Center.y, v3Center.z - a_fRadius),	// point D (center of circle)	//
+			vector3(cos(foundPhiRads * (i + 1)) * a_fRadius, sin(foundPhiRads * (i + 1)) * a_fRadius, -a_fRadius),	// point E
+			vector3(cos(foundPhiRads * i) * a_fRadius, sin(foundPhiRads * i) * a_fRadius, -a_fRadius));	// point F
+		*/
 	}
-
-
-
-	//maybe instead use the dodecahedron method
-	// create circles, with as many sides as the indicated a_nSubdivisions. then fit these together somehow?
-	// if a_nSubdivisions == 3, form a pyramid. 4, cube. 5, dodecahedron. 6, . but what if input is 2?
-
 	// -------------------------------
 
 	// Adding information about color
