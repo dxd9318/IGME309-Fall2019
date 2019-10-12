@@ -76,7 +76,7 @@ void Application::Display(void)
 	/*
 		The following offset will orient the orbits as in the demo, start without it to make your life easier.
 	*/
-	//m4Offset = glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Z);
+	m4Offset = glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Z);
 
 	// Initialize timer
 	static float fTimer = 0;	// Store the new timer
@@ -92,25 +92,26 @@ void Application::Display(void)
 		vector3 v3CurrentPos = ZERO_V3;
 
 		// -------------------------
-		// Set current sprint number, start, and end points
-		/*
-			//depends on sprint initialization.
 		
-		*/
-
+		// Set current sprint number, start, and end points		//THIS NEEDS TO BE MODIFIED SO EACH SPHERE FOLLOWS ONLY ITS OWN ORBIT
+		static uint sprintCounter = 0;	// Keeps track of number of the current "sprint", ie. the path between the current and next stops.
+		vector3 v3SprintStart = m_stopsList[sprintCounter];	// Sets starting point for the current sprint, using sprintCounter as an index for the stops vector.
+		vector3 v3SprintEnd = m_stopsList[(sprintCounter + 1) % (m_stopsList.size() - ((i+1) + 2)) /*m_stopsList.size()*/];	/*	Sets the next stop as the end of the current sprint.
+																						% used to loop to first stop if at end of stops vector. */
+		
 		// Calculate percentage to LERP by
 		float fTimeBtwnStops = 1.0f;
 		float fLerpPercentage = MapValue(fTimer, 0.0f, fTimeBtwnStops, 0.0f, 1.0f);		/*	Converts the ratio of [current elapsed time(fTimer) : fTimeBtwnStops]
 																							into a percentage value, scaled between 0.0f and 1.0f. */
 		
-		// Set current pos to lerp'd val	//CHANGE THESE VALUES WITH START/END POINTS
-		v3CurrentPos = glm::lerp(vector3(0.0f,0.0f,0.0f), vector3(0.0f, 0.0f, 0.0f), fLerpPercentage); 
+		// Set current position to lerp'd value
+		v3CurrentPos = glm::lerp(v3SprintStart, v3SprintEnd, fLerpPercentage);
 
 		// If percentage complete, reset lerp calculation variables
 		if (fLerpPercentage >= 1.0f)
 		{
-			//sprintCounter++;							// increment sprintCounter to set start of next sprint
-			//sprintCounter %= m_stopsList.size();		// if this was the last sprint, reset the sprint number to allow looping
+			sprintCounter++;							// increment sprintCounter to set start of next sprint
+			sprintCounter %= m_stopsList.size();		// if this was the last sprint, reset the sprint number to allow looping
 			fTimer = m_pSystem->GetDeltaTime(uClock);	// reset timer to allow LERPing for next sprint
 		}
 
