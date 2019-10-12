@@ -80,21 +80,29 @@ void Application::Display(void)
 	// CODE HERE -------------------------
 
 	// initialize stops list
-
+		//For each orbit, the angle between the stops of the orbit is (360deg / number of stops), where number of stops is same as number of sides of that orbit level.
+		// # of stops = (orbits list index val + 2)
 
 	// initialize timer
-
+	static float fTimer = 0;	//store the new timer
+	static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
+	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
 
 	// map timer as percentage for lerp
 
-
+	// Calculate percentage to LERP by
+	float fTimeBtwnStops = 1.0f;
+	float fLerpPercentage = MapValue(fTimer, 0.0f, fTimeBtwnStops, 0.0f, 1.0f);		/*	Converts the ratio of [current elapsed time(fTimer) : fTimeBtwnStops]
+																						into a percentage value, scaled between 0.0f and 1.0f. */
 	// set current pos to lerp'd val
 
 
 	// if percentage complete, reset lerp calculation variables
 
 
-	// translate by current pos
+	// translate model by current pos
+
+
 
 	// CODE HERE -------------------------
 
