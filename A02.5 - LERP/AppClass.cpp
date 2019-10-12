@@ -36,13 +36,22 @@ void Application::InitVariables(void)
 	{
 		vector3 v3Color = WaveLengthToRGB(uColor); //calculate color based on wavelength
 		m_shapeList.push_back(m_pMeshMngr->GenerateTorus(fSize, fSize - 0.1f, 3, i, v3Color)); //generate a custom torus and add it to the meshmanager
-		fSize += 0.5f; //increment the size for the next orbit
-		uColor -= static_cast<uint>(decrements); //decrease the wavelength
-
+		
 		// Initialize stops list	//might require another for loop to generate stops dynamically
 		// As the orbits are created, create the list of stops for each orbit as well
 		// Angle between stops of the orbit is (360deg / number of stops), where number of stops is same as number of sides of that orbit level.
-		// # of stops = (orbits list index val + 2)
+		// # of stops = (orbits list index val + 2)		//ie. 1st ring = 3 stops;	2nd ring = 4 stops;		3rd ring = 5 stops;
+		
+		float foundAngle = 360.0f / i;
+		float foundAngleRads = glm::radians(foundAngle);		//points will be (cos(this angle, incremented) * radius, sin(this angle, incremented) * radius, 0);
+
+		for (uint j = 0; j < i; j++) 
+		{
+			m_stopsList.push_back(vector3(cos(foundAngleRads * j) * fSize, sin(foundAngleRads * j) * fSize, 0));
+		}
+
+		fSize += 0.5f; //increment the size for the next orbit
+		uColor -= static_cast<uint>(decrements); //decrease the wavelength
 	}
 }
 void Application::Update(void)
@@ -69,31 +78,35 @@ void Application::Display(void)
 	*/
 	//m4Offset = glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Z);
 
-	// draw a shapes
-	for (uint i = 0; i < m_uOrbits; ++i)	//we're lerping multiple objects, so apply lerp behavior for each object
+	// Initialize timer
+	static float fTimer = 0;	// Store the new timer
+	static uint uClock = m_pSystem->GenClock(); // Generate a new clock for that timer
+	fTimer += m_pSystem->GetDeltaTime(uClock); // Get the delta time for that timer
+
+	// Draw all shapes
+	for (uint i = 0; i < m_uOrbits; ++i)	// We're lerping multiple objects, so loop application of lerp behavior
 	{
 		m_pMeshMngr->AddMeshToRenderList(m_shapeList[i], glm::rotate(m4Offset, 1.5708f, AXIS_X));
 
-		//calculate the current position
+		// Calculate the current position
 		vector3 v3CurrentPos = ZERO_V3;
 
-		// CODE HERE -------------------------
-
-		// initialize timer
-		static float fTimer = 0;	//store the new timer
-		static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
-		fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
-
-		// map timer as percentage for lerp
+		// -------------------------
+		// Set current sprint number, start, and end points
+		/*
+			//depends on sprint initialization.
+		
+		*/
 
 		// Calculate percentage to LERP by
 		float fTimeBtwnStops = 1.0f;
 		float fLerpPercentage = MapValue(fTimer, 0.0f, fTimeBtwnStops, 0.0f, 1.0f);		/*	Converts the ratio of [current elapsed time(fTimer) : fTimeBtwnStops]
 																							into a percentage value, scaled between 0.0f and 1.0f. */
-																							// set current pos to lerp'd val
+		
+		// Set current pos to lerp'd val	//CHANGE THESE VALUES WITH START/END POINTS
+		v3CurrentPos = glm::lerp(vector3(0.0f,0.0f,0.0f), vector3(0.0f, 0.0f, 0.0f), fLerpPercentage); 
 
-
-																							// if percentage complete, reset lerp calculation variables
+		// If percentage complete, reset lerp calculation variables
 		if (fLerpPercentage >= 1.0f)
 		{
 			//sprintCounter++;							// increment sprintCounter to set start of next sprint
@@ -101,15 +114,12 @@ void Application::Display(void)
 			fTimer = m_pSystem->GetDeltaTime(uClock);	// reset timer to allow LERPing for next sprint
 		}
 
-		// translate model by current pos
+		// -------------------------
 
-
-
-		// CODE END -------------------------
-
+		// Translate current indexed sphere by current pos
 		matrix4 m4Model = glm::translate(m4Offset, v3CurrentPos);
 
-		//draw spheres
+		// Draw spheres
 		m_pMeshMngr->AddSphereToRenderList(m4Model * glm::scale(vector3(0.1)), C_WHITE);
 	}
 
