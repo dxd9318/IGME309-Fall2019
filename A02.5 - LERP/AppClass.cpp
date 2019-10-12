@@ -77,6 +77,27 @@ void Application::Display(void)
 		m_pMeshMngr->AddSphereToRenderList(m4Model * glm::scale(vector3(0.1)), C_WHITE);
 	}
 
+	// CODE HERE -------------------------
+
+	// initialize stops list
+
+
+	// initialize timer
+
+
+	// map timer as percentage for lerp
+
+
+	// set current pos to lerp'd val
+
+
+	// if percentage complete, reset lerp calculation variables
+
+
+	// translate by current pos
+
+	// CODE HERE -------------------------
+
 	//render list call
 	m_uRenderCallCount = m_pMeshMngr->Render();
 
