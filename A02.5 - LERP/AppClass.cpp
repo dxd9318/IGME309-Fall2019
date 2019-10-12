@@ -96,8 +96,10 @@ void Application::Display(void)
 		// Set current sprint number, start, and end points		//THIS NEEDS TO BE MODIFIED SO EACH SPHERE FOLLOWS ONLY ITS OWN ORBIT
 		static uint sprintCounter = 0;	// Keeps track of number of the current "sprint", ie. the path between the current and next stops.
 		vector3 v3SprintStart = m_stopsList[sprintCounter];	// Sets starting point for the current sprint, using sprintCounter as an index for the stops vector.
-		vector3 v3SprintEnd = m_stopsList[(sprintCounter + 1) % (m_stopsList.size() - ((i+1) + 2)) /*m_stopsList.size()*/];	/*	Sets the next stop as the end of the current sprint.
-																						% used to loop to first stop if at end of stops vector. */
+		vector3 v3SprintEnd = m_stopsList[(sprintCounter + 1) % (m_stopsList.size() - ((i + 1) + 2)) /*m_stopsList.size()*/];	
+		/*	Sets the next stop as the end of the current sprint. % used to loop to first stop if at end of stops vector. 
+			The ((i + 1) + 2) refers to subtracting from the stopsList.size() the number of stops from all the following orbits.
+		*/
 		
 		// Calculate percentage to LERP by
 		float fTimeBtwnStops = 1.0f;
@@ -117,7 +119,7 @@ void Application::Display(void)
 
 		// -------------------------
 
-		// Translate current indexed sphere by current pos
+		// Translate current indexed sphere by current position
 		matrix4 m4Model = glm::translate(m4Offset, v3CurrentPos);
 
 		// Draw spheres
