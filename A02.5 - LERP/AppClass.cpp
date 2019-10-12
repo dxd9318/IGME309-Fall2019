@@ -38,6 +38,11 @@ void Application::InitVariables(void)
 		m_shapeList.push_back(m_pMeshMngr->GenerateTorus(fSize, fSize - 0.1f, 3, i, v3Color)); //generate a custom torus and add it to the meshmanager
 		fSize += 0.5f; //increment the size for the next orbit
 		uColor -= static_cast<uint>(decrements); //decrease the wavelength
+
+		// Initialize stops list	//might require another for loop to generate stops dynamically
+		// As the orbits are created, create the list of stops for each orbit as well
+		// Angle between stops of the orbit is (360deg / number of stops), where number of stops is same as number of sides of that orbit level.
+		// # of stops = (orbits list index val + 2)
 	}
 }
 void Application::Update(void)
@@ -65,46 +70,48 @@ void Application::Display(void)
 	//m4Offset = glm::rotate(IDENTITY_M4, 1.5708f, AXIS_Z);
 
 	// draw a shapes
-	for (uint i = 0; i < m_uOrbits; ++i)
+	for (uint i = 0; i < m_uOrbits; ++i)	//we're lerping multiple objects, so apply lerp behavior for each object
 	{
 		m_pMeshMngr->AddMeshToRenderList(m_shapeList[i], glm::rotate(m4Offset, 1.5708f, AXIS_X));
 
 		//calculate the current position
 		vector3 v3CurrentPos = ZERO_V3;
+
+		// CODE HERE -------------------------
+
+		// initialize timer
+		static float fTimer = 0;	//store the new timer
+		static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
+		fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
+
+		// map timer as percentage for lerp
+
+		// Calculate percentage to LERP by
+		float fTimeBtwnStops = 1.0f;
+		float fLerpPercentage = MapValue(fTimer, 0.0f, fTimeBtwnStops, 0.0f, 1.0f);		/*	Converts the ratio of [current elapsed time(fTimer) : fTimeBtwnStops]
+																							into a percentage value, scaled between 0.0f and 1.0f. */
+																							// set current pos to lerp'd val
+
+
+																							// if percentage complete, reset lerp calculation variables
+		if (fLerpPercentage >= 1.0f)
+		{
+			//sprintCounter++;							// increment sprintCounter to set start of next sprint
+			//sprintCounter %= m_stopsList.size();		// if this was the last sprint, reset the sprint number to allow looping
+			fTimer = m_pSystem->GetDeltaTime(uClock);	// reset timer to allow LERPing for next sprint
+		}
+
+		// translate model by current pos
+
+
+
+		// CODE END -------------------------
+
 		matrix4 m4Model = glm::translate(m4Offset, v3CurrentPos);
 
 		//draw spheres
 		m_pMeshMngr->AddSphereToRenderList(m4Model * glm::scale(vector3(0.1)), C_WHITE);
 	}
-
-	// CODE HERE -------------------------
-
-	// initialize stops list
-		//For each orbit, the angle between the stops of the orbit is (360deg / number of stops), where number of stops is same as number of sides of that orbit level.
-		// # of stops = (orbits list index val + 2)
-
-	// initialize timer
-	static float fTimer = 0;	//store the new timer
-	static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
-	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
-
-	// map timer as percentage for lerp
-
-	// Calculate percentage to LERP by
-	float fTimeBtwnStops = 1.0f;
-	float fLerpPercentage = MapValue(fTimer, 0.0f, fTimeBtwnStops, 0.0f, 1.0f);		/*	Converts the ratio of [current elapsed time(fTimer) : fTimeBtwnStops]
-																						into a percentage value, scaled between 0.0f and 1.0f. */
-	// set current pos to lerp'd val
-
-
-	// if percentage complete, reset lerp calculation variables
-
-
-	// translate model by current pos
-
-
-
-	// CODE HERE -------------------------
 
 	//render list call
 	m_uRenderCallCount = m_pMeshMngr->Render();
