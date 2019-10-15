@@ -11,6 +11,7 @@ Date: 2017/05
 #include "imgui\ImGuiObject.h"
 
 #include "MyMesh.h"
+#include "MyCamera.h"
 
 class Application
 {
@@ -22,6 +23,7 @@ class Application
 	String m_sProgrammer = "Diana Diaz - dxd9318@g.rit.edu";
 
 	MyMesh* m_pCone = nullptr;
+	MyCamera* m_pCamera = nullptr;
 
 private:
 	static ImGuiObject gui; //GUI object
