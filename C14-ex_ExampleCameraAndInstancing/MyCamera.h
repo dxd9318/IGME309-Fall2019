@@ -19,15 +19,21 @@ typedef glm::mat4 matrix4;
 class MyCamera 
 {
 public:
-	MyCamera(Simplex::SystemSingleton* pSystem, vector3 ptOrigin);
+	MyCamera(Simplex::SystemSingleton* pSystem, vector3 ptOrigin, vector3 vEulerOrientation = vector3(0.0f));
 	~MyCamera();
 
 	matrix4 GetViewMatrix();
 	matrix4 GetProjectionMatrix();
-
+	void SetFOV(float fov);
+	void RotateView(float deltaX, float deltaY);
+	void MoveForward(float forward, float sideways);
 
 private:
 	vector3 m_ptOrigin;
+	vector3 m_vEulerOrientation = vector3(0.0f, 0.0f, 0.0f);
+
+	float m_FOV = glm::radians(60.0f);
+
 
 	Simplex::SystemSingleton* m_pSystem = nullptr;
 };

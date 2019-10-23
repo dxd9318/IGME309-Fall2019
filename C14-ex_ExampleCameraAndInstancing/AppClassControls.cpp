@@ -385,6 +385,9 @@ void Application::CameraRotation(float a_fSpeed)
 	m_pCameraMngr->ChangeYaw(fAngleY * 0.25f);
 	m_pCameraMngr->ChangePitch(-fAngleX * 0.25f);
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
+
+	//Our Camera hijack
+	m_pCamera->RotateView(-fAngleX * 0.25f, fAngleY * 0.25f);	// ADDED IN C14-ex FROM LECTURE
 }
 //Keyboard
 void Application::ProcessKeyboard(void)

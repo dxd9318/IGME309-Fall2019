@@ -1,6 +1,9 @@
 #include "MyCamera.h"
 
-MyCamera::MyCamera(Simplex::SystemSingleton* pSystem, vector3 ptOrigin) : m_pSystem(pSystem), m_ptOrigin(ptOrigin)
+MyCamera::MyCamera(Simplex::SystemSingleton* pSystem, vector3 ptOrigin, vector3 vEulerOrientation) : 
+	m_pSystem(pSystem), 
+	m_ptOrigin(ptOrigin), 
+	m_vEulerOrientation(vEulerOrientation)
 {
 	//
 }
@@ -12,14 +15,14 @@ MyCamera::~MyCamera()
 
 matrix4 MyCamera::GetViewMatrix()
 {
-	vector3 cameraPosition = vector3(2.5f, 0.0f, -10.0f);	//because this gets inverted later on, this is placed at z = -10
-	matrix4 mat4View = glm::translate(IDENTITY_M4, cameraPosition);
+	//vector3 cameraPosition = vector3(2.5f, 0.0f, -10.0f);	//because this gets inverted later on, this is placed at z = -10
+	matrix4 mat4View = glm::translate(IDENTITY_M4, m_ptOrigin);	//m_ptOrigin replaces cameraPosition;
 
-	static vector3 eulerAngles = vector3(0.0f, 0.0f, 0.0f);
-	glm::quat qCameraOrientation = glm::quat(eulerAngles);
+	//static vector3 eulerAngles = vector3(0.0f, 0.0f, 0.0f);		//moved to MyCamera.h and renamed
+	glm::quat qCameraOrientation = glm::quat(m_vEulerOrientation);
 	mat4View = mat4View * glm::toMat4(qCameraOrientation);	//camera looking up, which means object appears to go down
 
-	eulerAngles.y += 0.05f;
+	//eulerAngles.y += 0.05f;
 
 	/*
 	// zPos (below) helps demonstrate that ortho projections map the points of an object to the points of your screen.
@@ -45,6 +48,9 @@ matrix4 MyCamera::GetViewMatrix()
 	mat4View = glm::rotate(mat4View, theta, vector3(1.0f, 1.0f, 0.0f));
 	theta += 0.01f;
 	*/
+
+
+	return mat4View;
 }
 
 matrix4 MyCamera::GetProjectionMatrix()
@@ -55,8 +61,36 @@ matrix4 MyCamera::GetProjectionMatrix()
 
 	float nearPlane = 0.1f;
 	float farPlane = 1000.0f;
-	float fov = glm::radians(60.0f);
+	//float fov = glm::radians(60.0f); // moved to MyCamera.h and renamed
 
 	//auto mat4Projection = glm::ortho(-width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f, nearPlane, farPlane);
-	auto mat4Projection = glm::perspective(fov, ratio, nearPlane, farPlane);
+	auto mat4Projection = glm::perspective(m_FOV, ratio, nearPlane, farPlane);
+
+
+	return mat4Projection;
 }
+
+void MyCamera::SetFOV(float fov) 
+{
+	fov = glm::radians(fov);
+
+	if (fov > 170.0f)
+		fov = 170.0f;
+
+	else if (fov < 10.0f)
+		fov = 10.0f;
+
+	m_FOV = fov;
+}
+
+void MyCamera::RotateView(float deltaX, float deltaY)
+{
+	m_vEulerOrientation.x += deltaX;
+	m_vEulerOrientation.y += deltaY;
+}
+
+void MyCamera::MoveForward(float forward, float sideways) 
+{
+
+}
+

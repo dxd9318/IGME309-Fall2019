@@ -16,7 +16,7 @@ void Application::InitVariables(void)
 	m_pCone = new MyMesh();
 	m_pCone->GenerateCone(1.0f, 2.0f, 10, Simplex::vector3(1.0f,0.0f, 0.0f));
 
-	m_pCamera = new MyCamera(m_pSystem, vector3(0.0f, 0.0f, -10.0f));
+	m_pCamera = new MyCamera(m_pSystem, vector3(0.0f, 0.0f, 10.0f));
 }
 void Application::Update(void)
 {
@@ -55,6 +55,8 @@ void Application::Display(void)
 	auto mat4Model = glm::translate(IDENTITY_M4, vector3(0.0f, 0.0f, 0.0f));
 	//mat4Model = glm::rotate(mat4Model, theta, vector3(1.0f, 1.0f, 0.0f));	//rotates the object
 	//theta += 0.05f;
+
+	//m_pCamera->RotateView(0.01f, 0.0f);	//replaces above theta rotation
 
 	//m_pCone->Render(mat4Projection, mat4View, mat4Model);
 	m_pCone->Render(m_pCamera->GetProjectionMatrix(), m_pCamera->GetViewMatrix(), mat4Model);
