@@ -1,5 +1,6 @@
 #include "AppClass.h"
 using namespace Simplex;
+
 void Application::InitVariables(void)
 {
 	//Set the position and target of the camera
@@ -14,16 +15,16 @@ void Application::InitVariables(void)
 
 	//creeper
 	m_pCreeper = new Model();
-	m_pCreeper->Load("Sorted\\SphereCube.fbx");
-	//m_pCreeper->Load("Minecraft\\Creeper.obj");
+	//m_pCreeper->Load("Sorted\\SphereCube.fbx");
+	m_pCreeper->Load("Minecraft\\Creeper.obj");
 	//m_pCreeper->Load("Lego\\Unikitty.bto");
 	//m_pCreeper->ChangeMeshOptions(MeshOptions(IDENTITY_M4, RENDER_SOLID | RENDER_WIRE), nullptr, -1);
 	m_pCreeperRB = new MyRigidBody(m_pCreeper->GetVertexList());
 
 	//steve
 	m_pSteve = new Model();
-	//m_pSteve->Load("Minecraft\\Steve.obj");
-	//m_pSteveRB = new MyRigidBody(m_pSteve->GetVertexList());
+	m_pSteve->Load("Minecraft\\Steve.obj");
+	m_pSteveRB = new MyRigidBody(m_pSteve->GetVertexList());
 }
 void Application::Update(void)
 {
@@ -36,26 +37,37 @@ void Application::Update(void)
 	//Is the first person camera active?
 	CameraRotation();
 
-	//reset the color of the rigid bodies to white 
-	m_pCreeperRB->SetColor(C_WHITE);
-	//m_pSteveRB->SetColor(C_WHITE);
-
+	if (m_pCreeperRB->IsColliding(m_pSteveRB)) 
+	{
+		m_pCreeperRB->SetColor(C_RED);
+		m_pSteveRB->SetColor(C_RED);
+	}
+	else {
+		//reset the color of the rigid bodies to white 
+		m_pCreeperRB->SetColor(C_WHITE);
+		m_pSteveRB->SetColor(C_WHITE);
+	}
+	
 	//Set model matrix to the creeper
-	m_pCreeper->SetModelMatrix(glm::translate(m_v3Creeper) * ToMatrix4(m_qArcBall));
+	matrix4 mCreeper = glm::translate(m_v3Creeper) * ToMatrix4(m_qArcBall);
+	m_pCreeper->SetModelMatrix(mCreeper);
+	m_pCreeperRB->SetModelMatrix(mCreeper);
+
+
 	//m_pModelRB->SetModelMatrix(glm::translate(m_v3Creeper) * ToMatrix4(m_qArcBall));
 	
 	//Set model matrix to Steve
 	matrix4 mSteve = glm::translate(vector3(2.25f, 0.0f, 0.0f));
 	m_pSteve->SetModelMatrix(mSteve);
-	//m_pSteveRB->SetModelMatrix(mSteve);
+	m_pSteveRB->SetModelMatrix(mSteve);
 	
 
 	m_pCreeper->AddToRenderList();
 	//m_pCreeper->PlaySequence();
 	m_pCreeperRB->AddToRenderList();
 
-	//m_pSteve->AddToRenderList();
-	//m_pSteveRB->AddToRenderList();
+	m_pSteve->AddToRenderList();
+	m_pSteveRB->AddToRenderList();
 }
 void Application::Display(void)
 {
