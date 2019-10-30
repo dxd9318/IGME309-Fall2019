@@ -1,5 +1,6 @@
 #include "MyRigidBody.h"
 using namespace Simplex;
+
 //Accessors
 bool MyRigidBody::GetVisible(void) { return m_bVisible; }
 float MyRigidBody::GetRadius(void) { return m_fRadius; }
@@ -14,6 +15,19 @@ vector3 MyRigidBody::GetMaxGlobal(void) { return m_v3MaxG; }
 vector3 MyRigidBody::GetHalfWidth(void) { return m_v3HalfWidth; }
 matrix4 MyRigidBody::GetModelMatrix(void) { return m_m4ToWorld; }
 
+enum BOX_POINT 
+{
+	TLF,
+	TRF,
+	TLB,
+	TRB,
+	BLF,
+	BRF,
+	BLB,
+	BRB,
+	INVALID
+};
+
 void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix) 
 { 
 	m_m4ToWorld = a_m4ModelMatrix; 
@@ -22,9 +36,46 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_v3MaxG = vector3(m_m4ToWorld * vector4(m_v3MaxL, 1.0f));
 
 	// We now have a half-vector, and model matrix. Use both to determine axis realigned bounding box
-	//m_v3HalfWidthRealigned = matrix3(m_m4ToWorld) * m_v3HalfWidth;
+	vector3 vHVOriented = matrix3(m_m4ToWorld) * m_v3HalfWidth;
 
-	//1:13:31
+	m_v3MaxLR = vector3(0.0f);
+	m_v3MinLR = vector3(0.0f);
+
+	for (BOX_POINT i = TLF; i < INVALID; i = (BOX_POINT)((int)(i) + 1)) 
+	{
+		vector3 ptBox = m_v3Center;
+		switch (i) 
+		{
+			case TLF: ptBox += vector3(-vHVOriented.x, vHVOriented.y, -vHVOriented.z); break;
+			case TRF: ptBox += vector3(vHVOriented.x, vHVOriented.y, -vHVOriented.z); break;
+			case TLB: ptBox += vector3(-vHVOriented.x, vHVOriented.y, vHVOriented.z); break;
+			case TRB: ptBox += vector3(vHVOriented.x, vHVOriented.y, vHVOriented.z); break;		//
+
+			case BLF: ptBox += vector3(-vHVOriented.x, -vHVOriented.y, -vHVOriented.z); break;	//
+			case BRF: ptBox += vector3(vHVOriented.x, -vHVOriented.y, -vHVOriented.z); break;
+			case BLB: ptBox += vector3(-vHVOriented.x, -vHVOriented.y, vHVOriented.z); break;
+			case BRB: ptBox += vector3(vHVOriented.x, -vHVOriented.y, vHVOriented.z); break;
+		}
+		//corrections around 1:31:25
+		// I HAVE MIN/MAX BACKWARDS HERE COMPARED TO WHAT IDAN HAS, DON'T KNOW WHICH IS RIGHT
+		if (ptBox.x < m_v3MinLR.x)
+			m_v3MinLR.x = ptBox.x;
+		if (ptBox.x > m_v3MaxLR.x)
+			m_v3MaxLR.x = ptBox.x;
+
+		if (ptBox.y < m_v3MinLR.y)
+			m_v3MinLR.y = ptBox.y;
+		if (ptBox.y > m_v3MaxLR.y)
+			m_v3MaxLR.y = ptBox.y;
+
+		if (ptBox.z < m_v3MinLR.z)
+			m_v3MinLR.z = ptBox.z;
+		if (ptBox.z > m_v3MaxLR.z)
+			m_v3MaxLR.z = ptBox.z;
+	}
+
+	m_v3HalfWidthR = (m_v3MaxL - m_v3MinL) * 0.5;		// DOUBLE CHECK THIS LINE (I think Idan left out the Rs for this line)
+	m_v3CenterR = m_v3MinLR + m_v3HalfWidthR;
 }
 
 //Allocation
@@ -176,7 +227,7 @@ void MyRigidBody::AddToRenderList(void)
 	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(glm::translate(m_m4ToWorld, m_v3Center), m_v3HalfWidth * 2.0f), C_YELLOW, RENDER_SOLID);
 
 	// ARBB
-	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(glm::translate(m_m4ToWorld, m_v3Center), m_v3HalfWidthRealigned * 2.0f), C_ORANGE, RENDER_SOLID);
+	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(glm::translate(m_m4ToWorld, m_v3CenterR), m_v3HalfWidthR * 2.0f), C_ORANGE, RENDER_SOLID);
 
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)

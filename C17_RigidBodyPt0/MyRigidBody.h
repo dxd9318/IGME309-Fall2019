@@ -32,7 +32,16 @@ class MyRigidBody
 	vector3 m_v3MaxG = vector3(0.0f); //maximum coordinate in global space
 
 	vector3 m_v3HalfWidth = vector3(0.0f); //half the size of all sides
-	vector3 m_v3HalfWidthRealigned = vector3(1.0f);	//half the size of all sides for ARBB
+
+	// ARBB variables
+	vector3 m_v3MinLR = vector3(0.0f); //minimum coordinate in local space, for ARBB
+	vector3 m_v3MaxLR = vector3(0.0f); //maximum coordinate in local space, for ARBB
+
+	vector3 m_v3MinGR = vector3(0.0f); //minimum coordinate in global space, for ARBB
+	vector3 m_v3MaxGR = vector3(0.0f); //maximum coordinate in global space, for ARBB
+
+	vector3 m_v3HalfWidthR = vector3(1.0f);	//half the size of all sides, for ARBB
+	vector3 m_v3CenterR = vector3(0.0f); //center point in local space, for ARBB
 
 	matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
 
