@@ -43,21 +43,23 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 
 	for (BOX_POINT i = TLF; i < INVALID; i = (BOX_POINT)((int)(i) + 1)) 
 	{
-		vector3 ptBox = m_v3Center;
+		vector3 ptBox = vector3(0.0f);
+		
 		switch (i) 
 		{
-			case TLF: ptBox += vector3(-vHVOriented.x, vHVOriented.y, -vHVOriented.z); break;
-			case TRF: ptBox += vector3(vHVOriented.x, vHVOriented.y, -vHVOriented.z); break;
-			case TLB: ptBox += vector3(-vHVOriented.x, vHVOriented.y, vHVOriented.z); break;
-			case TRB: ptBox += vector3(vHVOriented.x, vHVOriented.y, vHVOriented.z); break;		//
+			case TLF: ptBox += vector3(-m_v3HalfWidth.x, m_v3HalfWidth.y, -m_v3HalfWidth.z); break;
+			case TRF: ptBox += vector3(m_v3HalfWidth.x, m_v3HalfWidth.y, -m_v3HalfWidth.z); break;
+			case TLB: ptBox += vector3(-m_v3HalfWidth.x, m_v3HalfWidth.y, m_v3HalfWidth.z); break;
+			case TRB: ptBox += vector3(m_v3HalfWidth.x, m_v3HalfWidth.y, m_v3HalfWidth.z); break;		//
 
-			case BLF: ptBox += vector3(-vHVOriented.x, -vHVOriented.y, -vHVOriented.z); break;	//
-			case BRF: ptBox += vector3(vHVOriented.x, -vHVOriented.y, -vHVOriented.z); break;
-			case BLB: ptBox += vector3(-vHVOriented.x, -vHVOriented.y, vHVOriented.z); break;
-			case BRB: ptBox += vector3(vHVOriented.x, -vHVOriented.y, vHVOriented.z); break;
+			case BLF: ptBox += vector3(-m_v3HalfWidth.x, -m_v3HalfWidth.y, -m_v3HalfWidth.z); break;	//
+			case BRF: ptBox += vector3(m_v3HalfWidth.x, -m_v3HalfWidth.y, -m_v3HalfWidth.z); break;
+			case BLB: ptBox += vector3(-m_v3HalfWidth.x, -m_v3HalfWidth.y, m_v3HalfWidth.z); break;
+			case BRB: ptBox += vector3(m_v3HalfWidth.x, -m_v3HalfWidth.y, m_v3HalfWidth.z); break;
 		}
-		//corrections around 1:31:25
-		// I HAVE MIN/MAX BACKWARDS HERE COMPARED TO WHAT IDAN HAS, DON'T KNOW WHICH IS RIGHT
+
+		ptBox = matrix3(m_m4ToWorld) * ptBox;
+		
 		if (ptBox.x < m_v3MinLR.x)
 			m_v3MinLR.x = ptBox.x;
 		if (ptBox.x > m_v3MaxLR.x)
@@ -74,8 +76,14 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 			m_v3MaxLR.z = ptBox.z;
 	}
 
-	m_v3HalfWidthR = (m_v3MaxL - m_v3MinL) * 0.5;		// DOUBLE CHECK THIS LINE (I think Idan left out the Rs for this line)
-	m_v3CenterR = m_v3MinLR + m_v3HalfWidthR;
+	m_v3HalfWidthR = (m_v3MaxLR - m_v3MinLR) * 0.5;
+	m_v3CenterR = m_v3CenterG;
+
+	// Update the max/min with the global center
+	m_v3MaxGR = m_v3MaxLR + m_v3CenterG;
+	m_v3MinGR = m_v3MinLR + m_v3CenterG;
+
+
 }
 
 //Allocation
@@ -227,7 +235,7 @@ void MyRigidBody::AddToRenderList(void)
 	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(glm::translate(m_m4ToWorld, m_v3Center), m_v3HalfWidth * 2.0f), C_YELLOW, RENDER_SOLID);
 
 	// ARBB
-	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(glm::translate(m_m4ToWorld, m_v3CenterR), m_v3HalfWidthR * 2.0f), C_ORANGE, RENDER_SOLID);
+	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(glm::translate(IDENTITY_M4, m_v3CenterR), m_v3HalfWidthR * 2.0f), C_ORANGE, RENDER_SOLID);
 
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
@@ -248,8 +256,8 @@ bool MyRigidBody::IsColliding(MyRigidBody* const other)
 	{
 		// check bounding boxes
 
-		// check the bounds of the box
-		if (m_v3MaxG.x < other->m_v3MinG.x)
+		// check the bounds of the AABB
+		/*if (m_v3MaxG.x < other->m_v3MinG.x)
 			return false;
 		else if (m_v3MinG.x > other->m_v3MaxG.x)
 			return false;
@@ -262,6 +270,22 @@ bool MyRigidBody::IsColliding(MyRigidBody* const other)
 		if (m_v3MaxG.z < other->m_v3MinG.z)
 			return false;
 		else if (m_v3MinG.z > other->m_v3MaxG.z)
+			return false;*/
+
+		// check the bounds of the ARBB
+		if (m_v3MaxGR.x < other->m_v3MinGR.x)
+			return false;
+		else if (m_v3MinGR.x > other->m_v3MaxGR.x)
+			return false;
+
+		if (m_v3MaxGR.y < other->m_v3MinGR.y)
+			return false;
+		else if (m_v3MinGR.y > other->m_v3MaxGR.y)
+			return false;
+
+		if (m_v3MaxGR.z < other->m_v3MinGR.z)
+			return false;
+		else if (m_v3MinGR.z > other->m_v3MaxGR.z)
 			return false;
 
 		return true;
