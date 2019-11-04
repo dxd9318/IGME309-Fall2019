@@ -36,7 +36,7 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_v3MaxG = vector3(m_m4ToWorld * vector4(m_v3MaxL, 1.0f));
 
 	// We now have a half-vector, and model matrix. Use both to determine axis realigned bounding box
-	vector3 vHVOriented = matrix3(m_m4ToWorld) * m_v3HalfWidth;
+	//vector3 vHVOriented = matrix3(m_m4ToWorld) * m_v3HalfWidth;
 
 	m_v3MaxLR = vector3(0.0f);
 	m_v3MinLR = vector3(0.0f);
@@ -158,17 +158,18 @@ MyRigidBody::MyRigidBody(std::vector<vector3> a_pointList)
 	}
 
 	// calculate rb's center, and rb sphere's radius using that center
-	m_v3HalfWidth = (m_v3MaxL - m_v3MinL) * 0.5;
-	m_v3Center = m_v3HalfWidth + m_v3MinL;
+	m_v3HalfWidth = (m_v3MaxL - m_v3MinL) * 0.5;	// distance(and direction) btwn two points, divided in half
+	m_v3Center = m_v3HalfWidth + m_v3MinL;			// add this distance(and direction) back to the min point to find center point
 
 	m_fRadius = 0.0f;
 	m_fRadius2 = 0.0f;
 
+	// Find the radius of bounding sphere (find distance btwn center and pt farthest from center)
 	/* //Method 1
 	for (const vector3& pt : a_pointList) 
 	{
 		float temp;
-		if ((temp = glm::distance(pt, m_v3Center)) > m_fRadius)		//costly operation because uses sqroot
+		if ((temp = glm::distance(pt, m_v3Center)) > m_fRadius)		//costly operation on cpu because uses sqroot
 			m_fRadius = temp;
 	}
 	*/
@@ -240,12 +241,14 @@ void MyRigidBody::AddToRenderList(void)
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {
-	/*	//This method doesn't work because you're comparing local centers but not using global space for the comparison
+	//This method is called every frame, so it's important to consider ways to optimize it.
+
+	/*	//This method doesn't work because you're trying to compare local centers, instead of these models' respective centers across global space.
 	if (glm::distance(m_v3Center, other->m_v3Center) < (m_fRadius + other->m_fRadius))
 		return true;
-		*/
+	*/
 
-	/*	//gets center using global coordinates
+	/*	//gets center using global coordinates, compares distance using converted center data.
 	if (glm::distance(GetCenterGlobal(), other->GetCenterGlobal()) < (m_fRadius + other->m_fRadius))
 		return true;
 

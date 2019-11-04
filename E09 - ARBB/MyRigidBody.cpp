@@ -85,8 +85,17 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_m4ToWorld = a_m4ModelMatrix;
 	
 	//your code goes here---------------------
+	/*
 	m_v3MinG = m_v3MinL;
 	m_v3MaxG = m_v3MaxL;
+	*/
+
+	// Get globals - Transform local coords into global space
+	m_v3Center = GetCenterGlobal();
+	m_v3MinG = vector3(m_m4ToWorld * vector4(m_v3MinL, 1.0f));	//map local coords to a m4 matrix, then convert back to a vec3
+	m_v3MaxG = vector3(m_m4ToWorld * vector4(m_v3MaxL, 1.0f));
+
+
 	//----------------------------------------
 
 	//we calculate the distance between min and max vectors
