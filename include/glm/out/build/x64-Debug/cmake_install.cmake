@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/diana.diaz/Source/Repos/IGME309-Fall2019/include/glm
+# Install script for directory: D:/Profiles/dxd9318/source/repos/IGME309-Fall2019/include/glm
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Users/diana.diaz/Source/Repos/IGME309-Fall2019/include/glm/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "d:/profiles/dxd9318/source/repos/igme309-fall2019/include/glm/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/diana.diaz/Source/Repos/IGME309-Fall2019/include/glm/out/build/x64-Debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/Profiles/dxd9318/source/repos/IGME309-Fall2019/include/glm/out/build/x64-Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

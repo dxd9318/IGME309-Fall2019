@@ -4,7 +4,7 @@ using namespace Simplex;
 void MyRigidBody::Init(void)
 {
 	m_pMeshMngr = MeshManager::GetInstance();
-	m_bVisibleBS = false;
+	m_bVisibleBS = true;	//at the moment shows colliding BSs count as true collision
 	m_bVisibleOBB = true;
 	m_bVisibleARBB = false;
 
@@ -287,6 +287,46 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	(eSATResults::SAT_NONE has a value of 0)
 	*/
 
-	//there is no axis test that separates this two objects
+
+	// get the 8 points of both OBBs
+	/* // TAKE FROM SetModelMatrix METHOD ABOVE
+	//Calculate the 8 corners of the cube
+	vector3 v3Corner[8];
+	//Back square
+	v3Corner[0] = m_v3MinL;										//BLF
+	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);	//BRF
+	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);	//TLF
+	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);	//TRF
+
+	//Front square
+	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);	//BLB
+	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);	//BRB
+	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);	//TLB
+	v3Corner[7] = m_v3MaxL;										//TRB
+	*/
+
+	// using the 8 points of an OBB, get the XYZ axes of each box
+	//// for x, y, and z, normalize the vector resulting from subtracting one corner from another
+	//// xAxis = norm(v3Corner[0] - v3Corner[1]);
+	//// yAxis = norm(v3Corner[0] - v3Corner[2]);
+	//// zAxis = norm(v3Corner[0] - v3Corner[4]);
+
+	// find min and max values for each axis of both boxes
+	// since these values will vary depending on how a OBB is oriented, use found XYZ axes against each point of the OBB.
+	//foreach (ptA in ArrayOfPtsInBoxA)
+	//{ temp = dot(xAxisA, ptA) 
+	// if (temp < min) min = temp;
+	// if (temp > max) max = temp;
+	//}
+	//// repeat the above for yAxisA, zAxisA, and then xAxisB, yAxisB, zAxisB against ptB
+
+
+	// use min and max values to check for overlap
+	//// compare minX maxX of OBB A to minX maxX of OBB B
+	//// no overlap -> early out
+	//repeat for Y and Z axes
+
+
+	//there is no axis test that separates these two objects //ie. they're colliding
 	return eSATResults::SAT_NONE;
 }
