@@ -86,7 +86,7 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_m4ToWorld = a_m4ModelMatrix;
 
 	//Calculate the 8 corners of the cube
-	vector3 v3Corner[8];
+	//vector3 v3Corner[8];	//moved to header to be easily accessible later
 	//Back square
 	v3Corner[0] = m_v3MinL;
 	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
@@ -232,7 +232,7 @@ bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 	//if they are colliding check the SAT
 	if (bColliding)
 	{
-		if(SAT(a_pOther) != eSATResults::SAT_NONE)
+		if(SAT(a_pOther) != eSATResults::SAT_NONE)	//no separating plane, ie. colliding == true
 			bColliding = false;// reset to false
 	}
 
@@ -288,8 +288,8 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	*/
 
 
-	// get the 8 points of both OBBs
-	/* // TAKE FROM SetModelMatrix METHOD ABOVE
+	// get the 8 points of both OBBs	//already done, just reference using v3Corner[#]
+	/* // TAKEN FROM SetModelMatrix METHOD ABOVE
 	//Calculate the 8 corners of the cube
 	vector3 v3Corner[8];
 	//Back square
@@ -306,26 +306,88 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	*/
 
 	// using the 8 points of an OBB, get the XYZ axes of each box
-	//// for x, y, and z, normalize the vector resulting from subtracting one corner from another
-	//// xAxis = norm(v3Corner[0] - v3Corner[1]);
-	//// yAxis = norm(v3Corner[0] - v3Corner[2]);
-	//// zAxis = norm(v3Corner[0] - v3Corner[4]);
+	// for x, y, and z, normalize the vector resulting from subtracting one corner from another
+	vector3 xAxisA = glm::normalize(v3Corner[0] - v3Corner[1]);
+	vector3 yAxisA = glm::normalize(v3Corner[0] - v3Corner[2]);
+	vector3 zAxisA = glm::normalize(v3Corner[0] - v3Corner[4]);
+
+	vector3 xAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[1]);
+	vector3 yAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[2]);
+	vector3 zAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[4]);
 
 	// find min and max values for each axis of both boxes
-	// since these values will vary depending on how a OBB is oriented, use found XYZ axes against each point of the OBB.
-	//foreach (ptA in ArrayOfPtsInBoxA)
-	//{ temp = dot(xAxisA, ptA) 
-	// if (temp < min) min = temp;
-	// if (temp > max) max = temp;
-	//}
-	//// repeat the above for yAxisA, zAxisA, and then xAxisB, yAxisB, zAxisB against ptB
+	// since these values will vary depending on how a OBB is oriented, use dot product of found XYZ axes against each point of the OBB.
 
+	float xMinA = -900.0f;
+	float xMaxA = 900.0f;
+	float yMinA = -900.0f;
+	float yMaxA = 900.0f;
+	float zMinA = -900.0f;
+	float zMaxA = 900.0f;
+
+	float xMinB = -900.0f;
+	float xMaxB = 900.0f;
+	float yMinB = -900.0f;
+	float yMaxB = 900.0f;
+	float zMinB = -900.0f;
+	float zMaxB = 900.0f;
+
+	float temp = 0;
+
+	// first OBB (A)
+	for (vector3 ptA : v3Corner)
+	{ 
+		temp = glm::dot(xAxisA, ptA);
+		if (temp < xMinA) xMinA = temp;
+		if (temp > xMaxA) xMaxA = temp;
+	}
+	for (vector3 ptA : v3Corner)
+	{
+		temp = glm::dot(yAxisA, ptA);
+		if (temp < yMinA) yMinA = temp;
+		if (temp > yMaxA) yMaxA = temp;
+	}
+	for (vector3 ptA : v3Corner)
+	{
+		temp = glm::dot(zAxisA, ptA);
+		if (temp < zMinA) zMinA = temp;
+		if (temp > zMaxA) zMaxA = temp;
+	}
+
+	// second OBB (B)
+	for (vector3 ptB : a_pOther->v3Corner)
+	{
+		temp = glm::dot(xAxisB, ptB);
+		if (temp < xMinB) xMinB = temp;
+		if (temp > xMaxB) xMaxB = temp;
+	}
+	for (vector3 ptB : a_pOther->v3Corner)
+	{
+		temp = glm::dot(yAxisB, ptB);
+		if (temp < yMinB) yMinB = temp;
+		if (temp > yMaxB) yMaxB = temp;
+	}
+	for (vector3 ptB : a_pOther->v3Corner)
+	{
+		temp = glm::dot(zAxisB, ptB);
+		if (temp < zMinB) zMinB = temp;
+		if (temp > zMaxB) zMaxB = temp;
+	}
 
 	// use min and max values to check for overlap
 	//// compare minX maxX of OBB A to minX maxX of OBB B
 	//// no overlap -> early out
+
+
+
 	//repeat for Y and Z axes
 
+
+	//cross product checking
+	//find a plane between the x axis of boxA and each axis of box B. 
+	// repeat with y and z axes of A against all of B
+	//if this plane sits within both boxes (ie check against corners of both boxes), its a collision
+	// store these results in an array, return the plane of collision
 
 	//there is no axis test that separates these two objects //ie. they're colliding
 	return eSATResults::SAT_NONE;
