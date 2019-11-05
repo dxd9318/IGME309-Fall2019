@@ -307,9 +307,9 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 
 	// using the 8 points of an OBB, get the XYZ axes of each box
 	// for x, y, and z, normalize the vector resulting from subtracting one corner from another
-	vector3 xAxisA = glm::normalize(v3Corner[0] - v3Corner[1]);
-	vector3 yAxisA = glm::normalize(v3Corner[0] - v3Corner[2]);
-	vector3 zAxisA = glm::normalize(v3Corner[0] - v3Corner[4]);
+	vector3 xAxisA = glm::normalize(v3Corner[0] - v3Corner[1]); // BLF - BRF
+	vector3 yAxisA = glm::normalize(v3Corner[0] - v3Corner[2]); // BLF - TLF
+	vector3 zAxisA = glm::normalize(v3Corner[0] - v3Corner[4]); // BLF - BLB
 
 	vector3 xAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[1]);
 	vector3 yAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[2]);
@@ -317,7 +317,6 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 
 	// find min and max values for each axis of both boxes
 	// since these values will vary depending on how a OBB is oriented, use dot product of found XYZ axes against each point of the OBB.
-
 	float xMinA = -900.0f;
 	float xMaxA = 900.0f;
 	float yMinA = -900.0f;
@@ -375,17 +374,20 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	}
 
 	// use min and max values to check for overlap
-	//// compare minX maxX of OBB A to minX maxX of OBB B
-	//// no overlap -> early out
+	// compare minx maxx of obb a to minx maxx of obb b
+	// no overlap -> early out
 
-
-
-	//repeat for Y and Z axes
+	if (xMinA > xMaxB) return;
+	if (xMaxA < xMinB) return;
+	if (yMinA > yMaxB) return;
+	if (yMaxA < yMinB) return;
+	if (zMinA > zMaxB) return;
+	if (zMaxA < zMinB) return;
 
 
 	//cross product checking
-	//find a plane between the x axis of boxA and each axis of box B. 
-	// repeat with y and z axes of A against all of B
+	//use it to find a plane between the x axis of boxA and each axis of box B. 
+	// repeat with y and z axes of A against all axes of B
 	//if this plane sits within both boxes (ie check against corners of both boxes), its a collision
 	// store these results in an array, return the plane of collision
 
