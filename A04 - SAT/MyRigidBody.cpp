@@ -232,7 +232,7 @@ bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 	//if they are colliding check the SAT
 	if (bColliding)
 	{
-		if(SAT(a_pOther) != eSATResults::SAT_NONE)	//no separating plane, ie. colliding == true
+		if(SAT(a_pOther) != eSATResults::SAT_NONE)	//if result finds a plane of separation
 			bColliding = false;// reset to false
 	}
 
@@ -287,58 +287,45 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	(eSATResults::SAT_NONE has a value of 0)
 	*/
 
-
-	// get the 8 points of both OBBs	//already done, just reference using v3Corner[#]
+	// get the 8 points of both OBBs	// already done, just reference using v3Corner[#]
 	/* // TAKEN FROM SetModelMatrix METHOD ABOVE
 	//Calculate the 8 corners of the cube
 	vector3 v3Corner[8];
-	//Back square
-	v3Corner[0] = m_v3MinL;										//BLF
-	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);	//BRF
-	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);	//TLF
-	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);	//TRF
+	//Back square	//in this project, Z increases towards the camera.
+	v3Corner[0] = m_v3MinL;										//BLB
+	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);	//BRB
+	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);	//TLB
+	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);	//TRB
 
 	//Front square
-	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);	//BLB
-	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);	//BRB
-	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);	//TLB
-	v3Corner[7] = m_v3MaxL;										//TRB
+	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);	//BLF
+	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);	//BRF
+	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);	//TLF
+	v3Corner[7] = m_v3MaxL;										//TRF
 	*/
 
 	// using the 8 points of an OBB, get the XYZ axes of each box
 	// for x, y, and z, normalize the vector resulting from subtracting one corner from another
-	vector3 xAxisA = glm::normalize(v3Corner[0] - v3Corner[1]); // BLF - BRF
-	vector3 yAxisA = glm::normalize(v3Corner[0] - v3Corner[2]); // BLF - TLF
-	vector3 zAxisA = glm::normalize(v3Corner[0] - v3Corner[4]); // BLF - BLB
+	vector3 xAxisA = glm::normalize(v3Corner[0] - v3Corner[1]); // BLB - BRB
+	vector3 yAxisA = glm::normalize(v3Corner[0] - v3Corner[2]); // BLB - TLB
+	vector3 zAxisA = glm::normalize(v3Corner[0] - v3Corner[4]); // BLB - BLF
 
-	vector3 xAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[1]);
-	vector3 yAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[2]);
-	vector3 zAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[4]);
+	vector3 xAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[1]); // BLB - BRB
+	vector3 yAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[2]); // BLB - TLB
+	vector3 zAxisB = glm::normalize(a_pOther->v3Corner[0] - a_pOther->v3Corner[4]); // BLB - BLF
 
 	// find min and max values for each axis of both boxes
 	// since these values will vary depending on how a OBB is oriented, use dot product of found XYZ axes against each point of the OBB.
-	float xMinA = -900.0f;
-	float xMaxA = 900.0f;
-	float yMinA = -900.0f;
-	float yMaxA = 900.0f;
-	float zMinA = -900.0f;
-	float zMaxA = 900.0f;
+	float xMinA = -900.0f, yMinA = -900.0f, zMinA = -900.0f, xMinB = -900.0f, yMinB = -900.0f, zMinB = -900.0f;	// temp min values to be replaced through testing
+	float xMaxA = 900.0f, yMaxA = 900.0f, zMaxA = 900.0f, xMaxB = 900.0f, yMaxB = 900.0f, zMaxB = 900.0f; // temp max values to be replaced through testing
+	float temp = 0; // temp value to test against mins and maxs
 
-	float xMinB = -900.0f;
-	float xMaxB = 900.0f;
-	float yMinB = -900.0f;
-	float yMaxB = 900.0f;
-	float zMinB = -900.0f;
-	float zMaxB = 900.0f;
-
-	float temp = 0;
-
-	// first OBB (A)
+	// find mins and maxs of OBB (A)
 	for (vector3 ptA : v3Corner)
 	{ 
 		temp = glm::dot(xAxisA, ptA);
-		if (temp < xMinA) xMinA = temp;
-		if (temp > xMaxA) xMaxA = temp;
+		if (temp < xMinA) xMinA = temp;	// to find point closest to axis
+		if (temp > xMaxA) xMaxA = temp; // to find point farthest from axis
 	}
 	for (vector3 ptA : v3Corner)
 	{
@@ -353,7 +340,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 		if (temp > zMaxA) zMaxA = temp;
 	}
 
-	// second OBB (B)
+	// find mins and maxs of OBB (B)
 	for (vector3 ptB : a_pOther->v3Corner)
 	{
 		temp = glm::dot(xAxisB, ptB);
@@ -377,12 +364,13 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	// compare minx maxx of obb a to minx maxx of obb b
 	// no overlap -> early out
 
-	if (xMinA > xMaxB) return;
-	if (xMaxA < xMinB) return;
-	if (yMinA > yMaxB) return;
-	if (yMaxA < yMinB) return;
-	if (zMinA > zMaxB) return;
-	if (zMaxA < zMinB) return;
+	// return value of 1 means an axis of separation (ie. no collision) could be found.
+	if (xMinA > xMaxB) return 1;
+	if (xMaxA < xMinB) return 1;
+	if (yMinA > yMaxB) return 1;
+	if (yMaxA < yMinB) return 1;
+	if (zMinA > zMaxB) return 1;
+	if (zMaxA < zMinB) return 1;
 
 
 	//cross product checking
