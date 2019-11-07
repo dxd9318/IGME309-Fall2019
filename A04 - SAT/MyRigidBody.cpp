@@ -6,7 +6,7 @@ void MyRigidBody::Init(void)
 	m_pMeshMngr = MeshManager::GetInstance();
 	m_bVisibleBS = true;	//at the moment shows colliding BSs count as true collision
 	m_bVisibleOBB = true;
-	m_bVisibleARBB = false;
+	m_bVisibleARBB = true;
 
 	m_fRadius = 0.0f;
 
@@ -249,6 +249,7 @@ bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 
 	return bColliding;
 }
+
 void MyRigidBody::AddToRenderList(void)
 {
 	if (m_bVisibleBS)
@@ -304,6 +305,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	v3Corner[7] = m_v3MaxL;										//TRF
 	*/
 
+	// 1ST ROUND - dot product checks
 	// using the 8 points of an OBB, get the XYZ axes of each box
 	// for x, y, and z, normalize the vector resulting from subtracting one corner from another
 	vector3 xAxisA = glm::normalize(v3Corner[0] - v3Corner[1]); // BLB - BRB
@@ -321,9 +323,9 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	float temp = 0; // temp value to test against mins and maxs
 
 	// find mins and maxs of OBB (A)
-	for (vector3 ptA : v3Corner)
+	for (int i = 0; i < 8; i++/*vector3 ptA : v3Corner*/)
 	{ 
-		temp = glm::dot(xAxisA, ptA);
+		temp = glm::dot(xAxisA, v3Corner[i]);
 		if (temp < xMinA) xMinA = temp;	// to find point closest to axis
 		if (temp > xMaxA) xMaxA = temp; // to find point farthest from axis
 	}
@@ -362,23 +364,69 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 
 	// use min and max values to check for overlap
 	// compare minx maxx of obb a to minx maxx of obb b
-	// no overlap -> early out
+	// if no overlap -> early out
 
-	// return value of 1 means an axis of separation (ie. no collision) could be found.
-	if (xMinA > xMaxB) return 1;
-	if (xMaxA < xMinB) return 1;
-	if (yMinA > yMaxB) return 1;
-	if (yMaxA < yMinB) return 1;
-	if (zMinA > zMaxB) return 1;
-	if (zMaxA < zMinB) return 1;
+	// return value of 1 (or any not zero) means an axis of separation (ie. no collision) could be found.	//these might be backwards
+	if (xMinA > xMaxB) return eSATResults::SAT_AX;
+	if (xMaxA < xMinB) return eSATResults::SAT_BX;
+	if (yMinA > yMaxB) return eSATResults::SAT_AY;
+	if (yMaxA < yMinB) return eSATResults::SAT_BY;
+	if (zMinA > zMaxB) return eSATResults::SAT_AZ;
+	if (zMaxA < zMinB) return eSATResults::SAT_BZ;
 
 
-	//cross product checking
-	//use it to find a plane between the x axis of boxA and each axis of box B. 
-	// repeat with y and z axes of A against all axes of B
-	//if this plane sits within both boxes (ie check against corners of both boxes), its a collision
-	// store these results in an array, return the plane of collision
+	// 2ND ROUND - cross product checks
+	// use it to find a plane (represented as a vector) between the x axis of boxA and each axis of box B. // repeat with y and z axes of A against all axes of B
+	vector3 xAxBPlane = glm::cross(xAxisA, xAxisB);
+	vector3 xAyBPlane = glm::cross(xAxisA, yAxisB);
+	vector3 xAzBPlane = glm::cross(xAxisA, zAxisB);	
 
-	//there is no axis test that separates these two objects //ie. they're colliding
+	vector3 yAxBPlane = glm::cross(yAxisA, xAxisB);
+	vector3 yAyBPlane = glm::cross(yAxisA, yAxisB);
+	vector3 yAzBPlane = glm::cross(yAxisA, zAxisB);
+
+	vector3 zAxBPlane = glm::cross(zAxisA, xAxisB);
+	vector3 zAyBPlane = glm::cross(zAxisA, yAxisB);
+	vector3 zAzBPlane = glm::cross(zAxisA, zAxisB);
+
+	// store these plane results in a vector
+	std::vector<vector3> crossPlanes;
+
+	crossPlanes.push_back(xAxBPlane);
+	crossPlanes.push_back(xAyBPlane);
+	crossPlanes.push_back(xAzBPlane);
+
+	crossPlanes.push_back(yAxBPlane);
+	crossPlanes.push_back(yAyBPlane);
+	crossPlanes.push_back(yAzBPlane);
+
+	crossPlanes.push_back(zAxBPlane);
+	crossPlanes.push_back(zAyBPlane);
+	crossPlanes.push_back(zAzBPlane);
+
+	// re-using min and max variables from round 1 dot product results above
+	xMinA = -900.0f, yMinA = -900.0f, zMinA = -900.0f, xMinB = -900.0f, yMinB = -900.0f, zMinB = -900.0f;	// reset temp min values to be replaced through testing
+	xMaxA = 900.0f, yMaxA = 900.0f, zMaxA = 900.0f, xMaxB = 900.0f, yMaxB = 900.0f, zMaxB = 900.0f; // reset temp max values to be replaced through testing
+
+	// dot product on corners vs found crossPlanes
+	for (int i = 0; i < 9; i++) //for all 9 crossPlanes
+	{
+		for (vector3 ptA : v3Corner) 
+		{
+			temp = glm::dot(crossPlanes[i], ptA);
+			if (temp < yMinA) yMinA = temp;
+			if (temp > yMaxA) yMaxA = temp;
+		}
+
+		for (vector3 ptB : v3Corner) 
+		{
+			temp = glm::dot(crossPlanes[i], ptB);
+			if (temp < xMinB) xMinB = temp;
+			if (temp > xMaxB) xMaxB = temp;
+		}
+	}
+	
+
+	// there is no axis test that separates these two objects //ie. they're colliding
 	return eSATResults::SAT_NONE;
 }
