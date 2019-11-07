@@ -277,17 +277,6 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
-
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
-
 #pragma region First_Round_Dot_Product
 
 	// get the 8 points of both OBBs	// already done, just reference using v3Corner[#]
@@ -322,83 +311,83 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	// since these values will vary depending on how a OBB is oriented, use dot product of found XYZ axes against each point of the OBB.
 	float xMinA = 900.0f, yMinA = 900.0f, zMinA = 900.0f, xMinB = 900.0f, yMinB = 900.0f, zMinB = 900.0f;	// temp min values to be replaced through testing
 	float xMaxA =900.0f, yMaxA = -900.0f, zMaxA = -900.0f, xMaxB = -900.0f, yMaxB = -900.0f, zMaxB = -900.0f; // temp max values to be replaced through testing
-	float temp = 0; // temp value to test against mins and maxs
-	float temp2 = 0; //RENAME THIS AND ABOVE TEMP
+	float tempA = 0; // temp value to test against mins and maxs of OBB A
+	float tempB = 0; // temp value to test against mins and maxs of OBB B
 
 	// find mins and maxs of both OBBs against first OBB's axes
 	for (int i = 0; i < 8; i++)
 	{ 
 		// check min and max values of first box against first box's X axis
-		temp = glm::dot(xAxisA, v3Corner[i]);	
-		if (temp < xMinA) xMinA = temp;	// to find point closest to axis
-		if (temp > xMaxA) xMaxA = temp; // to find point farthest from axis
+		tempA = glm::dot(xAxisA, v3Corner[i]);	
+		if (tempA < xMinA) xMinA = tempA;	// to find point closest to axis
+		if (tempA > xMaxA) xMaxA = tempA; // to find point farthest from axis
 
 		// check min and max values of second box against first box's X axis
-		temp2 = glm::dot(xAxisA, a_pOther->v3Corner[i]);	
-		if (temp2 < xMinB) xMinB = temp2;	// to find point closest to axis
-		if (temp2 > xMaxB) xMaxB = temp2; // to find point farthest from axis
+		tempB = glm::dot(xAxisA, a_pOther->v3Corner[i]);	
+		if (tempB < xMinB) xMinB = tempB;	// to find point closest to axis
+		if (tempB > xMaxB) xMaxB = tempB; // to find point farthest from axis
 	}
 	for (int i = 0; i < 8; i++)
 	{
 		// check min and max values of first box against first box's Y axis
-		temp = glm::dot(yAxisA, v3Corner[i]);
-		if (temp < yMinA) yMinA = temp;
-		if (temp > yMaxA) yMaxA = temp;
+		tempA = glm::dot(yAxisA, v3Corner[i]);
+		if (tempA < yMinA) yMinA = tempA;
+		if (tempA > yMaxA) yMaxA = tempA;
 
 		// check min and max values of second box against first box's Y axis
-		temp2 = glm::dot(yAxisA, a_pOther->v3Corner[i]);
-		if (temp2 < yMinB) yMinB = temp2;
-		if (temp2 > yMaxB) yMaxB = temp2;
+		tempB = glm::dot(yAxisA, a_pOther->v3Corner[i]);
+		if (tempB < yMinB) yMinB = tempB;
+		if (tempB > yMaxB) yMaxB = tempB;
 	}
 	for (int i = 0; i < 8; i++)
 	{
 		// check min and max values of first box against first box's Z axis
-		temp = glm::dot(zAxisA, v3Corner[i]);
-		if (temp < zMinA) zMinA = temp;
-		if (temp > zMaxA) zMaxA = temp;
+		tempA = glm::dot(zAxisA, v3Corner[i]);
+		if (tempA < zMinA) zMinA = tempA;
+		if (tempA > zMaxA) zMaxA = tempA;
 
 		// check min and max values of second box against first box's Z axis
-		temp2 = glm::dot(zAxisA, a_pOther->v3Corner[i]);
-		if (temp2 < zMinB) zMinB = temp2;
-		if (temp2 > zMaxB) zMaxB = temp2;
+		tempB = glm::dot(zAxisA, a_pOther->v3Corner[i]);
+		if (tempB < zMinB) zMinB = tempB;
+		if (tempB > zMaxB) zMaxB = tempB;
 	}
 
 	// find mins and maxs of both OBBs against second OBB's axes
 	for (int i = 0; i < 8; i++)
 	{
 		// check min and max values of second box against second box's X axis
-		temp = glm::dot(xAxisB, a_pOther->v3Corner[i]);
-		if (temp < xMinB) xMinB = temp;
-		if (temp > xMaxB) xMaxB = temp;
+		tempA = glm::dot(xAxisB, a_pOther->v3Corner[i]);
+		if (tempA < xMinB) xMinB = tempA;
+		if (tempA > xMaxB) xMaxB = tempA;
 
 		// check min and max values of first box against second box's X axis
-		temp2 = glm::dot(xAxisB, v3Corner[i]);
-		if (temp2 < xMinA) xMinA = temp2;
-		if (temp2 > xMaxA) xMaxA = temp2;
+		tempB = glm::dot(xAxisB, v3Corner[i]);
+		if (tempB < xMinA) xMinA = tempB;
+		if (tempB > xMaxA) xMaxA = tempB;
 	}
 	for (int i = 0; i < 8; i++)
 	{
 		// check min and max values of second box against second box's Y axis
-		temp = glm::dot(yAxisB, a_pOther->v3Corner[i]);
-		if (temp < yMinB) yMinB = temp;
-		if (temp > yMaxB) yMaxB = temp;
+		tempA = glm::dot(yAxisB, a_pOther->v3Corner[i]);
+		if (tempA < yMinB) yMinB = tempA;
+		if (tempA > yMaxB) yMaxB = tempA;
 
 		// check min and max values of first box against second box's Y axis
-		temp2 = glm::dot(yAxisB, v3Corner[i]);
-		if (temp2 < yMinA) yMinA = temp2;
-		if (temp2 > yMaxA) yMaxA = temp2;
+		tempB = glm::dot(yAxisB, v3Corner[i]);
+		if (tempB < yMinA) yMinA = tempB;
+		if (tempB > yMaxA) yMaxA = tempB;
 	}
 	for (int i = 0; i < 8; i++)
 	{
 		// check min and max values of second box against second box's Z axis
-		temp = glm::dot(zAxisB, a_pOther->v3Corner[i]);
-		if (temp < zMinB) zMinB = temp;
-		if (temp > zMaxB) zMaxB = temp;
+		tempA = glm::dot(zAxisB, a_pOther->v3Corner[i]);
+		if (tempA < zMinB) zMinB = tempA;
+		if (tempA > zMaxB) zMaxB = tempA;
 
 		// check min and max values of first box against second box's Z axis
-		temp2 = glm::dot(zAxisB, v3Corner[i]);
-		if (temp2 < zMinA) zMinA = temp2;
-		if (temp2 > zMaxA) zMaxA = temp2;
+		tempB = glm::dot(zAxisB, v3Corner[i]);
+		if (tempB < zMinA) zMinA = tempB;
+		if (tempB > zMaxA) zMaxA = tempB;
 	}
 
 	// use min and max values to check for overlap
@@ -416,7 +405,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 
 #pragma region Second_Round_Cross_Product
 	// 2ND ROUND - cross product checks
-	// use it to find a plane (represented as a vector) between the x axis of boxA and each axis of box B. // repeat with y and z axes of A against all axes of B
+	// use cross to find a plane (represented as a vector) between the x axis of boxA and each axis of box B. // repeat with y and z axes of A against all axes of B
 	vector3 xAxBPlane = glm::cross(xAxisA, xAxisB);
 	vector3 xAyBPlane = glm::cross(xAxisA, yAxisB);
 	vector3 xAzBPlane = glm::cross(xAxisA, zAxisB);	
@@ -445,7 +434,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	crossPlanes.push_back(zAzBPlane);
 
 	// dot product on corners vs found crossPlanes
-	for (int i = 0; i < 9; i++) //for all 9 crossPlanes pls help me
+	for (int i = 0; i < 9; i++) //for all 9 crossPlanes
 	{
 		// re-using min and max variables from round 1 dot product results above
 		xMinA = 900.0f, yMinA = 900.0f, zMinA = 900.0f, xMinB = 900.0f, yMinB = 900.0f, zMinB = 900.0f;	// reset temp min values to be replaced through testing
@@ -455,76 +444,76 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 		for (int j = 0; j < 8; j++)
 		{
 			// check min and max values of first box against first box's X axis
-			temp = glm::dot(crossPlanes[i], v3Corner[j]);
-			if (temp < xMinA) xMinA = temp;	// to find point closest to axis
-			if (temp > xMaxA) xMaxA = temp; // to find point farthest from axis
+			tempA = glm::dot(crossPlanes[i], v3Corner[j]);
+			if (tempA < xMinA) xMinA = tempA;	// to find point closest to axis
+			if (tempA > xMaxA) xMaxA = tempA; // to find point farthest from axis
 
 			// check min and max values of second box against first box's X axis
-			temp2 = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
-			if (temp2 < xMinB) xMinB = temp2;	// to find point closest to axis
-			if (temp2 > xMaxB) xMaxB = temp2; // to find point farthest from axis
+			tempB = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
+			if (tempB < xMinB) xMinB = tempB;	// to find point closest to axis
+			if (tempB > xMaxB) xMaxB = tempB; // to find point farthest from axis
 		}
 		for (int j = 0; j < 8; j++)
 		{
 			// check min and max values of first box against first box's Y axis
-			temp = glm::dot(crossPlanes[i], v3Corner[j]);
-			if (temp < yMinA) yMinA = temp;
-			if (temp > yMaxA) yMaxA = temp;
+			tempA = glm::dot(crossPlanes[i], v3Corner[j]);
+			if (tempA < yMinA) yMinA = tempA;
+			if (tempA > yMaxA) yMaxA = tempA;
 
 			// check min and max values of second box against first box's Y axis
-			temp2 = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
-			if (temp2 < yMinB) yMinB = temp2;
-			if (temp2 > yMaxB) yMaxB = temp2;
+			tempB = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
+			if (tempB < yMinB) yMinB = tempB;
+			if (tempB > yMaxB) yMaxB = tempB;
 		}
 		for (int j = 0; j < 8; j++)
 		{
 			// check min and max values of first box against first box's Z axis
-			temp = glm::dot(crossPlanes[i], v3Corner[j]);
-			if (temp < zMinA) zMinA = temp;
-			if (temp > zMaxA) zMaxA = temp;
+			tempA = glm::dot(crossPlanes[i], v3Corner[j]);
+			if (tempA < zMinA) zMinA = tempA;
+			if (tempA > zMaxA) zMaxA = tempA;
 
 			// check min and max values of second box against first box's Z axis
-			temp2 = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
-			if (temp2 < zMinB) zMinB = temp2;
-			if (temp2 > zMaxB) zMaxB = temp2;
+			tempB = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
+			if (tempB < zMinB) zMinB = tempB;
+			if (tempB > zMaxB) zMaxB = tempB;
 		}
 
 		// find mins and maxs of both OBBs against second OBB's axes
 		for (int j = 0; j < 8; j++)
 		{
 			// check min and max values of second box against second box's X axis
-			temp = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
-			if (temp < xMinB) xMinB = temp;
-			if (temp > xMaxB) xMaxB = temp;
+			tempA = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
+			if (tempA < xMinB) xMinB = tempA;
+			if (tempA > xMaxB) xMaxB = tempA;
 
 			// check min and max values of first box against second box's X axis
-			temp2 = glm::dot(crossPlanes[i], v3Corner[j]);
-			if (temp2 < xMinA) xMinA = temp2;
-			if (temp2 > xMaxA) xMaxA = temp2;
+			tempB = glm::dot(crossPlanes[i], v3Corner[j]);
+			if (tempB < xMinA) xMinA = tempB;
+			if (tempB > xMaxA) xMaxA = tempB;
 		}
 		for (int j = 0; j < 8; j++)
 		{
 			// check min and max values of second box against second box's Y axis
-			temp = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
-			if (temp < yMinB) yMinB = temp;
-			if (temp > yMaxB) yMaxB = temp;
+			tempA = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
+			if (tempA < yMinB) yMinB = tempA;
+			if (tempA > yMaxB) yMaxB = tempA;
 
 			// check min and max values of first box against second box's Y axis
-			temp2 = glm::dot(crossPlanes[i], v3Corner[j]);
-			if (temp2 < yMinA) yMinA = temp2;
-			if (temp2 > yMaxA) yMaxA = temp2;
+			tempB = glm::dot(crossPlanes[i], v3Corner[j]);
+			if (tempB < yMinA) yMinA = tempB;
+			if (tempB > yMaxA) yMaxA = tempB;
 		}
 		for (int j = 0; j < 8; j++)
 		{
 			// check min and max values of second box against second box's Z axis
-			temp = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
-			if (temp < zMinB) zMinB = temp;
-			if (temp > zMaxB) zMaxB = temp;
+			tempA = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
+			if (tempA < zMinB) zMinB = tempA;
+			if (tempA > zMaxB) zMaxB = tempA;
 
 			// check min and max values of first box against second box's Z axis
-			temp2 = glm::dot(crossPlanes[i], v3Corner[j]);
-			if (temp2 < zMinA) zMinA = temp2;
-			if (temp2 > zMaxA) zMaxA = temp2;
+			tempB = glm::dot(crossPlanes[i], v3Corner[j]);
+			if (tempB < zMinA) zMinA = tempB;
+			if (tempB > zMaxA) zMaxA = tempB;
 		}
 
 		//// BOX A
@@ -567,7 +556,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 		//	if (temp > zMaxB) zMaxB = temp;
 		//}
 
-		// return value of 1 (or any not zero) means an axis of separation (ie. no collision) could be found.	//these might be backwards
+		// return value of 1 (or any not zero) means an axis of separation (ie. no collision) could be found.
 		if (xMinA > xMaxB) return 1;
 		if (xMaxA < xMinB) return 1;
 		if (yMinA > yMaxB) return 1;
