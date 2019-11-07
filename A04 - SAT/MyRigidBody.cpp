@@ -86,18 +86,17 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_m4ToWorld = a_m4ModelMatrix;
 
 	//Calculate the 8 corners of the cube
-	//vector3 v3Corner[8];	//moved to header to be easily accessible later
 	//Back square
-	v3Corner[0] = m_v3MinL;
-	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
-	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);
-	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);
+	v3Corner[0] = m_v3MinL;										//BLB
+	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);	//BRB
+	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);	//TLB
+	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);	//TRB
 
 	//Front square
-	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
-	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);
-	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
-	v3Corner[7] = m_v3MaxL;
+	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);	//BLF
+	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);	//BRF
+	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);	//TLF
+	v3Corner[7] = m_v3MaxL;										//TRF
 
 	//Place them in world space
 	for (uint uIndex = 0; uIndex < 8; ++uIndex)
@@ -279,22 +278,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
 #pragma region First_Round_Dot_Product
 
-	// get the 8 points of both OBBs	// already done, just reference using v3Corner[#]
-	/* // TAKEN FROM SetModelMatrix METHOD ABOVE
-	//Calculate the 8 corners of the cube
-	vector3 v3Corner[8];
-	//Back square	//in this project, Z increases towards the camera.
-	v3Corner[0] = m_v3MinL;										//BLB
-	v3Corner[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);	//BRB
-	v3Corner[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);	//TLB
-	v3Corner[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);	//TRB
-
-	//Front square
-	v3Corner[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);	//BLF
-	v3Corner[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);	//BRF
-	v3Corner[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);	//TLF
-	v3Corner[7] = m_v3MaxL;										//TRF
-	*/
+	// get the 8 points of both OBBs	// already done in SetModelMatrix, just reference using v3Corner[#]
 
 	// 1ST ROUND - dot product checks
 	// using the 8 points of an OBB, get the XYZ axes of each box
@@ -314,87 +298,75 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	float tempA = 0; // temp value to test against mins and maxs of OBB A
 	float tempB = 0; // temp value to test against mins and maxs of OBB B
 
-	// find mins and maxs of both OBBs against first OBB's axes
+	// find mins and maxs of both OBBs against both of their XYZ axes
 	for (int i = 0; i < 8; i++)
 	{ 
-		// check min and max values of first box against first box's X axis
+		// OBB A'S X AXIS
+		// against OBB A's corners
 		tempA = glm::dot(xAxisA, v3Corner[i]);	
 		if (tempA < xMinA) xMinA = tempA;	// to find point closest to axis
 		if (tempA > xMaxA) xMaxA = tempA; // to find point farthest from axis
-
-		// check min and max values of second box against first box's X axis
+		// against OBB B's corners
 		tempB = glm::dot(xAxisA, a_pOther->v3Corner[i]);	
 		if (tempB < xMinB) xMinB = tempB;	// to find point closest to axis
 		if (tempB > xMaxB) xMaxB = tempB; // to find point farthest from axis
-	}
-	for (int i = 0; i < 8; i++)
-	{
-		// check min and max values of first box against first box's Y axis
+
+		// OBB A'S Y AXIS
+		// against OBB A's corners
 		tempA = glm::dot(yAxisA, v3Corner[i]);
 		if (tempA < yMinA) yMinA = tempA;
 		if (tempA > yMaxA) yMaxA = tempA;
-
-		// check min and max values of second box against first box's Y axis
+		// against OBB B's corners
 		tempB = glm::dot(yAxisA, a_pOther->v3Corner[i]);
 		if (tempB < yMinB) yMinB = tempB;
 		if (tempB > yMaxB) yMaxB = tempB;
-	}
-	for (int i = 0; i < 8; i++)
-	{
-		// check min and max values of first box against first box's Z axis
+
+		// OBB A'S Z AXIS
+		// against OBB A's corners
 		tempA = glm::dot(zAxisA, v3Corner[i]);
 		if (tempA < zMinA) zMinA = tempA;
 		if (tempA > zMaxA) zMaxA = tempA;
-
-		// check min and max values of second box against first box's Z axis
+		// against OBB B's corners
 		tempB = glm::dot(zAxisA, a_pOther->v3Corner[i]);
 		if (tempB < zMinB) zMinB = tempB;
 		if (tempB > zMaxB) zMaxB = tempB;
-	}
 
-	// find mins and maxs of both OBBs against second OBB's axes
-	for (int i = 0; i < 8; i++)
-	{
-		// check min and max values of second box against second box's X axis
+
+		// OBB B'S X AXIS
+		// against OBB B's corners
 		tempA = glm::dot(xAxisB, a_pOther->v3Corner[i]);
 		if (tempA < xMinB) xMinB = tempA;
 		if (tempA > xMaxB) xMaxB = tempA;
-
-		// check min and max values of first box against second box's X axis
+		// against OBB A's corners
 		tempB = glm::dot(xAxisB, v3Corner[i]);
 		if (tempB < xMinA) xMinA = tempB;
 		if (tempB > xMaxA) xMaxA = tempB;
-	}
-	for (int i = 0; i < 8; i++)
-	{
-		// check min and max values of second box against second box's Y axis
+
+		// OBB B'S Y AXIS
+		// against OBB B's corners
 		tempA = glm::dot(yAxisB, a_pOther->v3Corner[i]);
 		if (tempA < yMinB) yMinB = tempA;
 		if (tempA > yMaxB) yMaxB = tempA;
-
-		// check min and max values of first box against second box's Y axis
+		// against OBB A's corners
 		tempB = glm::dot(yAxisB, v3Corner[i]);
 		if (tempB < yMinA) yMinA = tempB;
 		if (tempB > yMaxA) yMaxA = tempB;
-	}
-	for (int i = 0; i < 8; i++)
-	{
-		// check min and max values of second box against second box's Z axis
+
+		// OBB B'S Z AXIS
+		// against OBB B's corners
 		tempA = glm::dot(zAxisB, a_pOther->v3Corner[i]);
 		if (tempA < zMinB) zMinB = tempA;
 		if (tempA > zMaxB) zMaxB = tempA;
-
-		// check min and max values of first box against second box's Z axis
+		// against OBB A's corners
 		tempB = glm::dot(zAxisB, v3Corner[i]);
 		if (tempB < zMinA) zMinA = tempB;
 		if (tempB > zMaxA) zMaxA = tempB;
 	}
 
-	// use min and max values to check for overlap
-	// compare minx maxx of obb a to minx maxx of obb b
+	// compare xMin, xMax of OBB A to xMin xMax of OBB B to check for overlap (ie. collision)
 	// if no overlap -> early out
 
-	// return value of 1 (or any not zero) means an axis of separation (ie. no collision) could be found.	//these might be backwards
+	// return value of 1 (or any not zero) means an axis of separation (ie. no collision) could be found.	//these might be backwards?
 	if (xMinA > xMaxB) return eSATResults::SAT_AX;
 	if (xMaxA < xMinB) return eSATResults::SAT_BX;
 	if (yMinA > yMaxB) return eSATResults::SAT_AY;
@@ -443,118 +415,67 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 		// find mins and maxs of both OBBs against first OBB's axes
 		for (int j = 0; j < 8; j++)
 		{
-			// check min and max values of first box against first box's X axis
+			// OBB A'S X AXIS
+			// against OBB A's corners
 			tempA = glm::dot(crossPlanes[i], v3Corner[j]);
 			if (tempA < xMinA) xMinA = tempA;	// to find point closest to axis
 			if (tempA > xMaxA) xMaxA = tempA; // to find point farthest from axis
-
-			// check min and max values of second box against first box's X axis
+			// against OBB B's corners
 			tempB = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
 			if (tempB < xMinB) xMinB = tempB;	// to find point closest to axis
 			if (tempB > xMaxB) xMaxB = tempB; // to find point farthest from axis
-		}
-		for (int j = 0; j < 8; j++)
-		{
-			// check min and max values of first box against first box's Y axis
+
+			// OBB A'S Y AXIS
+			// against OBB A's corners
 			tempA = glm::dot(crossPlanes[i], v3Corner[j]);
 			if (tempA < yMinA) yMinA = tempA;
 			if (tempA > yMaxA) yMaxA = tempA;
-
-			// check min and max values of second box against first box's Y axis
+			// against OBB B's corners
 			tempB = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
 			if (tempB < yMinB) yMinB = tempB;
 			if (tempB > yMaxB) yMaxB = tempB;
-		}
-		for (int j = 0; j < 8; j++)
-		{
-			// check min and max values of first box against first box's Z axis
+
+			// OBB A'S Z AXIS
+			// against OBB A's corners
 			tempA = glm::dot(crossPlanes[i], v3Corner[j]);
 			if (tempA < zMinA) zMinA = tempA;
 			if (tempA > zMaxA) zMaxA = tempA;
-
-			// check min and max values of second box against first box's Z axis
+			// against OBB B's corners
 			tempB = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
 			if (tempB < zMinB) zMinB = tempB;
 			if (tempB > zMaxB) zMaxB = tempB;
-		}
 
-		// find mins and maxs of both OBBs against second OBB's axes
-		for (int j = 0; j < 8; j++)
-		{
-			// check min and max values of second box against second box's X axis
+
+			// OBB B'S X AXIS
+			// against OBB B's corners
 			tempA = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
 			if (tempA < xMinB) xMinB = tempA;
 			if (tempA > xMaxB) xMaxB = tempA;
-
-			// check min and max values of first box against second box's X axis
+			// against OBB A's corners
 			tempB = glm::dot(crossPlanes[i], v3Corner[j]);
 			if (tempB < xMinA) xMinA = tempB;
 			if (tempB > xMaxA) xMaxA = tempB;
-		}
-		for (int j = 0; j < 8; j++)
-		{
-			// check min and max values of second box against second box's Y axis
+
+			// OBB B'S Y AXIS
+			// against OBB B's corners
 			tempA = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
 			if (tempA < yMinB) yMinB = tempA;
 			if (tempA > yMaxB) yMaxB = tempA;
-
-			// check min and max values of first box against second box's Y axis
+			// against OBB A's corners
 			tempB = glm::dot(crossPlanes[i], v3Corner[j]);
 			if (tempB < yMinA) yMinA = tempB;
 			if (tempB > yMaxA) yMaxA = tempB;
-		}
-		for (int j = 0; j < 8; j++)
-		{
-			// check min and max values of second box against second box's Z axis
+
+			// OBB B'S Z AXIS
+			// against OBB B's corners
 			tempA = glm::dot(crossPlanes[i], a_pOther->v3Corner[j]);
 			if (tempA < zMinB) zMinB = tempA;
 			if (tempA > zMaxB) zMaxB = tempA;
-
-			// check min and max values of first box against second box's Z axis
+			// against OBB A's corners
 			tempB = glm::dot(crossPlanes[i], v3Corner[j]);
 			if (tempB < zMinA) zMinA = tempB;
 			if (tempB > zMaxA) zMaxA = tempB;
 		}
-
-		//// BOX A
-		//for (vector3 ptA : v3Corner) 
-		//{
-		//	temp = glm::dot(crossPlanes[i], ptA);
-		//	if (temp < xMinA) xMinA = temp;
-		//	if (temp > xMaxA) xMaxA = temp;
-		//}
-		//for (vector3 ptA : v3Corner)
-		//{
-		//	temp = glm::dot(crossPlanes[i], ptA);
-		//	if (temp < yMinA) yMinA = temp;
-		//	if (temp > yMaxA) yMaxA = temp;
-		//}
-		//for (vector3 ptA : v3Corner)
-		//{
-		//	temp = glm::dot(crossPlanes[i], ptA);
-		//	if (temp < zMinA) zMinA = temp;
-		//	if (temp > zMaxA) zMaxA = temp;
-		//}
-
-		//// BOX B
-		//for (vector3 ptB : a_pOther->v3Corner)
-		//{
-		//	temp = glm::dot(crossPlanes[i], ptB);
-		//	if (temp < xMinB) xMinB = temp;
-		//	if (temp > xMaxB) xMaxB = temp;
-		//}
-		//for (vector3 ptB : a_pOther->v3Corner)
-		//{
-		//	temp = glm::dot(crossPlanes[i], ptB);
-		//	if (temp < yMinB) yMinB = temp;
-		//	if (temp > yMaxB) yMaxB = temp;
-		//}
-		//for (vector3 ptB : a_pOther->v3Corner)
-		//{
-		//	temp = glm::dot(crossPlanes[i], ptB);
-		//	if (temp < zMinB) zMinB = temp;
-		//	if (temp > zMaxB) zMaxB = temp;
-		//}
 
 		// return value of 1 (or any not zero) means an axis of separation (ie. no collision) could be found.
 		if (xMinA > xMaxB) return 1;
@@ -566,6 +487,6 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	}
 #pragma endregion
 
-	// there is no axis test that separates these two objects //ie. they're colliding
+	// there is no axis test that separates these two objects (ie. they're colliding)
 	return eSATResults::SAT_NONE;
 }
