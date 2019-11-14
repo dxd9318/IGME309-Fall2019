@@ -1,6 +1,7 @@
 #include "MyEntity.h"
 using namespace Simplex;
 std::map<String, MyEntity*> MyEntity::m_IDMap;
+
 //  Accessors
 matrix4 Simplex::MyEntity::GetModelMatrix(void){ return m_m4ToWorld; }
 void Simplex::MyEntity::SetModelMatrix(matrix4 a_m4ToWorld)
@@ -17,6 +18,7 @@ RigidBody* Simplex::MyEntity::GetRigidBody(void){	return m_pRigidBody; }
 bool Simplex::MyEntity::IsInitialized(void){ return m_bInMemory; }
 String Simplex::MyEntity::GetUniqueID(void) { return m_sUniqueID; }
 void Simplex::MyEntity::SetAxisVisible(bool a_bSetAxis) { m_bSetAxis = a_bSetAxis; }
+
 //  MyEntity
 void Simplex::MyEntity::Init(void)
 {
@@ -48,6 +50,7 @@ void Simplex::MyEntity::Release(void)
 	SafeDelete(m_pRigidBody);
 	m_IDMap.erase(m_sUniqueID);
 }
+
 //The big 3
 Simplex::MyEntity::MyEntity(String a_sFileName, String a_sUniqueID)
 {
@@ -87,6 +90,7 @@ MyEntity& Simplex::MyEntity::operator=(MyEntity const& other)
 	return *this;
 }
 MyEntity::~MyEntity(){Release();}
+
 //--- Methods
 void Simplex::MyEntity::AddToRenderList(bool a_bDrawRigidBody)
 {

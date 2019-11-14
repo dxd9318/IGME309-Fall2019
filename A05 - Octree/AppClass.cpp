@@ -30,6 +30,7 @@ void Application::InitVariables(void)
 		}
 	}
 	m_uOctantLevels = 1;
+	// THIS IS WHERE YOU'D CREATE ROOT OCTANT
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
