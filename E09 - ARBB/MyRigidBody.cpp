@@ -85,16 +85,55 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_m4ToWorld = a_m4ModelMatrix;
 	
 	//your code goes here---------------------
-	/*
-	m_v3MinG = m_v3MinL;
-	m_v3MaxG = m_v3MaxL;
-	*/
+	// (I'm going off of Alberto's method that was used in the SAT assignment)
 
-	// Get globals - Transform local coords into global space
-	m_v3Center = GetCenterGlobal();
-	m_v3MinG = vector3(m_m4ToWorld * vector4(m_v3MinL, 1.0f));	//map local coords to a m4 matrix, then convert back to a vec3
-	m_v3MaxG = vector3(m_m4ToWorld * vector4(m_v3MaxL, 1.0f));
+	// Form the 'proto-ARBB': Get the 8 corners of the box in local space. 
+	// These will be transformed into global space, then replaced by new min and max corner values.
 
+	// Back face
+	ARBBCorners[0] = m_v3MinL;	// first corner will be the min x,y,z, or the Bottom Left Back corner (BLB)
+	ARBBCorners[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);	// BRB
+	ARBBCorners[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);	// TLB
+	ARBBCorners[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);	// TRB
+	// Front face
+	ARBBCorners[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);	// BLF
+	ARBBCorners[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);	// BRF
+	ARBBCorners[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);	// TLF
+	ARBBCorners[7] = m_v3MaxL;	// last corner will be the max x,y,z, or the Top Right Front corner (TRF)
+
+	// Transform these coordinates from local to global space
+	for (int i = 0; i < 8; i++) 
+	{
+		ARBBCorners[i] = vector3(m_m4ToWorld * vector4(ARBBCorners[i], 1.0f));
+	}
+
+
+	// Now we turn the 'proto-ARBB' into the actual ARBB by re-assigning the corners based on the max and min coordinate values.
+
+	// Start with default values, will most likely get replaced through the following set of checks
+	m_v3MaxG = ARBBCorners[0];
+	m_v3MinG = ARBBCorners[0];
+
+	// For each coordinate, compare its xyz values against the current min and max xyz values. Replace min and max accordingly.
+	for (int i = 0; i < 8; i++) 
+	{
+		if (m_v3MaxG.x < ARBBCorners[i].x)
+			m_v3MaxG.x = ARBBCorners[i].x;
+		if (m_v3MinG.x > ARBBCorners[i].x)
+			m_v3MinG.x = ARBBCorners[i].x;
+
+		if (m_v3MaxG.y < ARBBCorners[i].y)
+			m_v3MaxG.y = ARBBCorners[i].y;
+		if (m_v3MinG.y > ARBBCorners[i].y)
+			m_v3MinG.y = ARBBCorners[i].y;
+
+		if (m_v3MaxG.z < ARBBCorners[i].z)
+			m_v3MaxG.z = ARBBCorners[i].z;
+		if (m_v3MinG.z > ARBBCorners[i].z)
+			m_v3MinG.z = ARBBCorners[i].z;
+	}
+
+	// The newly established min and max global coordinates can now be used to render the final ARBB for this frame.
 
 	//----------------------------------------
 
