@@ -30,7 +30,9 @@ void Application::InitVariables(void)
 		}
 	}
 	m_uOctantLevels = 1;
-	// THIS IS WHERE YOU'D CREATE ROOT OCTANT
+
+	// THIS IS WHERE YOU'D SET ROOT OCTANT AND DEFINE LEVELS USING ABOVE VAR
+
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
@@ -55,8 +57,11 @@ void Application::Display(void)
 	// Clear the screen
 	ClearScreen();
 
-	//display octree
-	//m_pRoot->Display();
+	//display octree	// WILL NEED TO UNCOMMENT
+	if (m_uOctantID == -1)
+	//	m_pRoot->Display();
+	//else
+	//	m_pRoot->Display(m_uOctantID);
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
@@ -75,6 +80,8 @@ void Application::Display(void)
 }
 void Application::Release(void)
 {
+	// RELEASE OCTREE (ROOT)
+
 	//release GUI
 	ShutdownGUI();
 }
