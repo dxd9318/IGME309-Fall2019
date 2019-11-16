@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __OCTANT_H_
 #define __OCTANT_H_
 
@@ -25,7 +24,7 @@ class Octant // created based off of the Octant.h file used in the C21_SpatialOp
 	Octant* m_pChild[8]; // array of this octant's children
 	Octant* m_pParent = nullptr; // this octant's parent octant
 
-	// Shape info for constructing this octant
+	// Info for constructing this octant's shape
 	vector3 m_v3Min = vector3(0.0f);	// octant's min corner (BLB)
 	vector3 m_v3Max = vector3(0.0f);	// octant's max corner (TRF)
 	vector3 m_v3Center = vector3(0.0f);	// center point of the octant
