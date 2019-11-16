@@ -54,7 +54,30 @@ public:
 	void Swap(Octant& other);
 #pragma endregion
 
-#pragma region Functions for Octant Shape Creation
+#pragma region Octree Creation / Destruction
+	// creates 8 octant children for this octant
+	void Subdivide(void);
+
+	// Creates a tree through subdivision, with up to the max number of levels
+	void ConstructTree(uint a_nMaxLevel = 3);
+
+	// Returns the total number of octants in the world
+	uint GetOctantCount(void);
+
+	// returns the child octant specified by index
+	Octant* GetChild(uint a_nChild);
+
+	// returns the parent of this octant
+	Octant* GetParent(void);
+
+	// clears the entity list for each octant (will do so recursively)
+	void ClearEntityList(void);
+
+	// Deletes all children and any further descendants
+	void KillBranches(void);
+#pragma endregion
+
+#pragma region Octant Shape Creation
 	// Returns this octant's size vector
 	vector3 GetSize(void);
 
@@ -68,9 +91,7 @@ public:
 	vector3 GetMaxGlobal(void);
 #pragma endregion
 
-	// Checks if the specified entity is contained by this octant // MAYBE RENAME TO IsContained ???????
-	bool IsColliding(uint a_uRBIndex);
-	
+#pragma region Display Functions
 	// Displays the specified octant as well as all its children octants //( AM I DISPLAYING ONLY IMMEDIATE CHILDREN, OR ALL DESCENDANTS?)
 	void DisplayDescendants(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
 
@@ -79,40 +100,20 @@ public:
 
 	// Displays any leaf octants that currently contain entities //(use if you want to cycle through just this type of octant)
 	void DisplayOccupiedLeaves(vector3 a_v3Color = C_YELLOW);
-
-	// clears the entity list for each octant (will do so recursively)
-	void ClearEntityList(void);
-
-	// creates 8 octant children for this octant
-	void Subdivide(void);
-
-	// returns the child octant specified by index
-	Octant* GetChild(uint a_nChild);
-
-	// returns the parent of this octant
-	Octant* GetParent(void);
-
-
-	
-
-	// Deletes all children and any further descendants
-	void KillBranches(void);
-
-	// Creates a tree through subdivision, with up to the max number of levels
-	void ConstructTree(uint a_nMaxLevel = 3);
-
-	// Assigns IDs to entities contained by leaf nodes
-	void AssignIDtoEntity(void);
+#pragma endregion
 
 #pragma region Helper Functions
+	// Checks if the specified entity is contained by this octant
+	bool IsContained(uint a_uRBIndex);
+
 	// Checks if this octant contains no child octants
 	bool IsLeaf(void);
 
 	// Checks if this octant has more than the specified number of entities
 	bool ContainsMoreThan(uint a_nEntities);
 
-	// Returns the total number of octants in the world
-	uint GetOctantCount(void);
+	// Assigns IDs to entities contained by leaf nodes
+	void AssignIDtoEntity(void);
 #pragma endregion
 
 private:
