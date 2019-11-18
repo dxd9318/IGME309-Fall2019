@@ -26,7 +26,7 @@ public:
 	matrix4 GetProjectionMatrix();
 	void SetFOV(float fov);
 	void RotateView(float deltaX, float deltaY);
-	void MoveForward(float forward, float sideways);
+	void Move(float forward, float sideways);
 
 private:
 	vector3 m_ptOrigin;

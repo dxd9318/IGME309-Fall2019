@@ -89,8 +89,9 @@ void MyCamera::RotateView(float deltaX, float deltaY)
 	m_vEulerOrientation.y += deltaY;
 }
 
-void MyCamera::MoveForward(float forward, float sideways) 
+void MyCamera::Move(float forward, float sideways) 
 {
-
+	m_ptOrigin.z += forward;
+	m_ptOrigin.x += sideways;
 }
 
