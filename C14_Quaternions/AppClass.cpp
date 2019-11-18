@@ -38,7 +38,7 @@ void Application::Update(void)
 	}
 #pragma endregion
 #pragma region LERP
-	if (true)
+	if (false)
 	{
 		// DOES NOT WORK! //LERP doesn't work for rotation. This is why we use SLERP
 		matrix4 m4OrientZ1 = glm::rotate(IDENTITY_M4, 0.0f, vector3(0.0f, 0.0f, 1.0f));
@@ -63,7 +63,7 @@ void Application::Update(void)
 	}
 #pragma endregion
 #pragma region orientation using quaternions
-	if (false)
+	if (true)
 	{
 		m_m4Steve = glm::toMat4(m_qOrientation);	
 		// notice how holding two rotation direction keys at the same time yields conical rotation around an axis between the two selected rotation axes.

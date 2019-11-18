@@ -3,7 +3,7 @@ using namespace Simplex;
 void Application::InitVariables(void)
 {
 	//Change this to your name and email
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Diana Diaz - dxd9318@g.rit.edu";
 
 	//Set the position and target of the camera
 	//(I'm at [0,0,10], looking at [0,0,0] and up is the positive Y axis)
@@ -53,22 +53,30 @@ void Application::Display(void)
 		m_pCamera->ResetCamera();
 		break;
 	case 2:
-		m_pCamera->ResetCamera();
+		m_pCamera->ResetCamera();	// have to reset before each change or else you're starting your camera modifications using the last camera set up
+		m_pCamera->SetPerspective(false);	// sets camera to use an orthographic view
 		break;
 	case 3:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(30.0f, 0.0f, 0.0f), vector3(0.0f), vector3(0.0f, 0.0f, -1.0f));	// changes the up vector and position of camera
 		break;
 	case 4:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -15.0f), vector3(0.0f), vector3(0.0f, 1.0f, 0.0f));	// changes camera position to place it behind the cone. camera still looks at same position though, which means it turns around on it's own.
 		break;
 	case 5:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -15.0f), vector3(0.0f), vector3(0.0f, 1.0f, 0.0f));	// camera placed behind cone (as before in case 4)
+		m_pCamera->SetNearFar(vector2(6.0f, 1000.0f));																	// increase the near plane to clip out the cone
 		break;
 	case 6:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -15.0f), vector3(0.0f), vector3(0.0f, 1.0f, 0.0f));	// camera placed behind cone (as before in case 4)
+		m_pCamera->SetNearFar(vector2(0.001f, 10.0f));																	// decrease the far plane to clip out the red torus
 		break;
 	case 7:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, 10.0f), vector3(0.0f), vector3(0.0f, -1.0f, 0.0f));	// original position, only changing the up vector to turn the view upside down
 		break;
 	}
 

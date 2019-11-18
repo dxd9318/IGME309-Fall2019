@@ -145,11 +145,11 @@ void Application::DrawGUI(void)
 		ImGui::SetNextWindowPos(ImVec2(1, 1), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(315, 42), ImGuiSetCond_FirstUseEver);
 		String sAbout = m_pSystem->GetAppName() + " - About";
-		ImGui::Begin(sAbout.c_str(), (bool*)0, window_flags);
+		/*ImGui::Begin(sAbout.c_str(), (bool*)0, window_flags);
 		{
 			ImGui::TextColored(v4Color, "Programmer: \nAlberto Bobadilla - labigm@rit.edu");
 		}
-		ImGui::End();
+		ImGui::End();*/
 	}
 
 	//Main Window
