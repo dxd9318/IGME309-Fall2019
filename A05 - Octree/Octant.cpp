@@ -1,29 +1,85 @@
 #include "Octant.h"
 using namespace Simplex;
 
-
-
+// Overall octree variables
+uint Octant::m_uOctantCount = 0; // total number of octants created
+uint Octant::m_uMaxLevel; // max possible level of the octree (we don't want it to subdivide endlessly)
+uint Octant::m_uIdealEntityCount; // max number of entities each octant should contain // RENAME THIS VAR?
 
 
 #pragma region The Big Three, and then some
 // Constructor 1 (For creating Root)
 Octant::Octant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5) 
 {
-	m_pRoot = this;
+	Init();	// calls entitymngr and meshmngr singletons
+	m_uID = m_uOctantCount;	// starts indexing octants at 0
+	m_uOctantCount++;		// actual count of octants
 
+	m_pRoot = this;
 	m_uMaxLevel = a_nMaxLevel;
 	m_uIdealEntityCount = a_nIdealEntityCount;
+
+	//for size: get center, min and max values
+	m_v3Min = m_pEntityMngr->GetRigidBody()->GetCenterGlobal();
+	m_v3Max = m_pEntityMngr->GetRigidBody()->GetCenterGlobal();
+	vector3 tempMin = vector3(0.0f);
+	vector3 tempMax = vector3(0.0f);
+
+	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++) 
+	{
+		//similar to ARBB/SAT, we're getting the smallest possible min and largest possible max across all entities to construct corners of octant.
+		tempMin = m_pEntityMngr->GetRigidBody(i)->GetMinGlobal();
+		tempMax = m_pEntityMngr->GetRigidBody(i)->GetMaxGlobal();
+
+		if (tempMin.x < m_v3Min.x) m_v3Min.x = tempMin.x;
+		if (tempMax.x > m_v3Max.x) m_v3Max.x = tempMax.x;
+
+		if (tempMin.y < m_v3Min.y) m_v3Min.y = tempMin.y;
+		if (tempMax.y > m_v3Max.y) m_v3Max.y = tempMax.y;
+
+		if (tempMin.z < m_v3Min.z) m_v3Min.z = tempMin.z;
+		if (tempMax.z > m_v3Max.z) m_v3Max.z = tempMax.z;
+	}
+
+	m_v3Center = (m_v3Min + m_v3Min) / 2.0f;	// center point of the octant
+	m_v3Size = (m_v3Min - m_v3Min); // size of the octant as a vector
+	
+	//add entities to octant
+	//subdivision would happen here
 }
 
 // Constructor 2 (For creating all children octants)
 Octant::Octant(vector3 a_v3Center, vector3 a_v3Size) 
 {
+	Init();	// calls entitymngr and meshmngr singletons
+	m_uID = m_uOctantCount;
+	m_uOctantCount++;
+
 	m_v3Center = a_v3Center;
 	m_v3Size = a_v3Size;
+
+	m_v3Max = (m_v3Size / 2.0f) + m_v3Center;
+	m_v3Min = (m_v3Size / 2.0f) - m_v3Center;
 }
 
 // Copy Assignment Operator
-Octant& Octant::operator=(Octant const& other) {}
+Octant& Octant::operator=(Octant const& other) 
+{
+	Init();
+
+	//copying the following: level, num of children, parent, min, max, center, size, array of children, entity list, 
+
+	m_uLevel = other.m_uLevel;
+	m_uChildren = other.m_uChildren;
+	m_pParent = other.m_pParent;
+
+	m_v3Min = other.m_v3Min;
+	m_v3Max = other.m_v3Max;
+	m_v3Center = other.m_v3Center;
+	m_v3Size = other.m_v3Size;
+
+
+}
 
 // Destructor
 Octant::~Octant(void) { Release(); }
