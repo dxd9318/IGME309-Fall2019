@@ -67,10 +67,10 @@ Octant& Octant::operator=(Octant const& other)
 {
 	Init();
 
-	//copying the following: level, num of children, parent, min, max, center, size, array of children, entity list, 
+	//copying the following: level, parent, min, max, center, size, num of children, array of children, entity list, 
 
 	m_uLevel = other.m_uLevel;
-	m_uChildren = other.m_uChildren;
+	//m_uChildren = other.m_uChildren;
 	m_pParent = other.m_pParent;
 
 	m_v3Min = other.m_v3Min;
@@ -78,6 +78,15 @@ Octant& Octant::operator=(Octant const& other)
 	m_v3Center = other.m_v3Center;
 	m_v3Size = other.m_v3Size;
 
+	Release(); // should remove any children of the copy octant that might already exist, so that they can be replaced
+	m_uChildren = other.m_uChildren;
+	//copy children here, recursion
+
+	//copy over entity list
+	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++) 
+	{
+		m_EntityList.push_back(other.m_EntityList[i]);
+	}
 
 }
 
@@ -99,16 +108,39 @@ void Octant::ConstructTree(uint a_nMaxLevel = 3) {}
 uint Octant::GetOctantCount(void) { return m_uOctantCount; }
 
 // returns the child octant specified by index
-Octant* Octant::GetChild(uint a_nChild) { return m_pChild[a_nChild]; }
+Octant* Octant::GetChild(uint a_nChild) 
+{ 
+	if (m_uChildren == 0) 
+	{
+		return nullptr;
+	}
+	return m_pChild[a_nChild]; 
+}
 
 // returns the parent of this octant
 Octant* Octant::GetParent(void) { return m_pParent; }
 
 // clears the entity list for each octant (will do so recursively)
-void Octant::ClearEntityList(void) {}
+void Octant::ClearEntityList(void) 
+{
+	for (int i = 0; i < m_uChildren; i++) 
+	{
+		m_pChild[0]->ClearEntityList();
+	}
+	m_EntityList.clear();
+}
 
 // Deletes all children and any further descendants
-void Octant::KillBranches(void) {}
+void Octant::KillBranches(void) 
+{
+	if (IsLeaf()) return;
+	
+	for (int i = 0; i < m_uChildren; i++) 
+	{
+		m_pChild[i]->KillBranches();
+		SafeDelete(m_pChild[i]);
+	}
+}
 #pragma endregion
 
 #pragma region Octant Shape Creation
