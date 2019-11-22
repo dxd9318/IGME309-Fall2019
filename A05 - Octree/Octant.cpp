@@ -3,19 +3,21 @@ using namespace Simplex;
 
 // Overall octree variables
 uint Octant::m_uOctantCount = 0; // total number of octants created
-uint Octant::m_uMaxLevel; // max possible level of the octree (we don't want it to subdivide endlessly)
-uint Octant::m_uIdealEntityCount; // max number of entities each octant should contain // RENAME THIS VAR?
+uint Octant::m_uMaxLevel = 2; // max possible level of the octree (we don't want it to subdivide endlessly)
+uint Octant::m_uIdealEntityCount = 5; // max number of entities each octant should contain // RENAME THIS VAR?
 
 
 #pragma region The Big Three, and then some
-// Constructor 1 (For creating Root)
-Octant::Octant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5) 
+// Constructor 1 (For creating Root)	////////////////// WITH ALBERTO'S EXAMPLE, THIS GET CALLED EVERY TIME WE ADD OR REMOVE A LEVEL USING KEY PRESSES (AppClassControls.cpp) // DELETE THE CURRENT TREE, CREATE A NEW ONE. WATCH FOR MEMORY LEAKS
+Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount) 
 {
-	Init();	// calls entitymngr and meshmngr singletons
-	m_uID = m_uOctantCount;	// starts indexing octants at 0
-	m_uOctantCount++;		// actual count of octants
+	m_uOctantCount = 0;	//makes sure to set octant count (a static var) to 0 whenever new root is created
+	Init();	// calls entitymngr and meshmngr singletons, inits values
+	//m_uID = m_uOctantCount;	// starts indexing octants at 0 // done in Init
+	m_uOctantCount++;// increment to account for this root octant
 
 	m_pRoot = this;
+	m_lChild.clear();
 	m_uMaxLevel = a_nMaxLevel;
 	m_uIdealEntityCount = a_nIdealEntityCount;
 
@@ -45,14 +47,15 @@ Octant::Octant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5)
 	m_v3Size = (m_v3Min - m_v3Min); // size of the octant as a vector
 	
 	//add entities to octant
-	//subdivision would happen here
+	//subdivision/constructtree would happen here
+
 }
 
 // Constructor 2 (For creating all children octants)
 Octant::Octant(vector3 a_v3Center, vector3 a_v3Size) 
 {
 	Init();	// calls entitymngr and meshmngr singletons
-	m_uID = m_uOctantCount;
+	//m_uID = m_uOctantCount; // done in Init
 	m_uOctantCount++;
 
 	m_v3Center = a_v3Center;
@@ -67,8 +70,8 @@ Octant& Octant::operator=(Octant const& other)
 {
 	Init();
 
-	//copying the following: level, parent, min, max, center, size, num of children, array of children, entity list, 
-
+	//copying the following: root, level, parent, min, max, center, size, num of children, array of children, entity list, 
+	m_pRoot = other.m_pRoot;
 	m_uLevel = other.m_uLevel;
 	//m_uChildren = other.m_uChildren;
 	m_pParent = other.m_pParent;
@@ -81,12 +84,17 @@ Octant& Octant::operator=(Octant const& other)
 	Release(); // should remove any children of the copy octant that might already exist, so that they can be replaced
 	m_uChildren = other.m_uChildren;
 	//copy children here, recursion
+	for (int i = 0; i < m_uChildren; i++) 
+	{
+		m_pChild[i] = other.m_pChild[i];
+	}
 
 	//copy over entity list
-	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++) 
+	for (int i = 0; i < other.m_pEntityMngr->GetEntityCount(); i++) 
 	{
 		m_EntityList.push_back(other.m_EntityList[i]);
 	}
+
 
 }
 
@@ -94,11 +102,31 @@ Octant& Octant::operator=(Octant const& other)
 Octant::~Octant(void) { Release(); }
 
 // Swap
-void Octant::Swap(Octant& other) {}
+void Octant::Swap(Octant& other) 
+{
+	std::swap(m_pRoot, other.m_pRoot);
+	
+	std::swap(m_uID, other.m_uID);
+	std::swap(m_uLevel, other.m_uLevel);
+	std::swap(m_uChildren, other.m_uChildren);
+	for (int i = 0; i < 8; i++) 
+	{
+		std::swap(m_pChild[i], other.m_pChild[i]);
+	}
+	std::swap(m_pParent, other.m_pParent);
+
+	std::swap(m_v3Min, other.m_v3Min);
+	std::swap(m_v3Max, other.m_v3Max);
+	std::swap(m_v3Center, other.m_v3Center);
+	std::swap(m_v3Size, other.m_v3Size);
+
+	m_pEntityMngr = MyEntityManager::GetInstance();
+	m_pMeshMngr = MeshManager::GetInstance();
+}
 #pragma endregion
 
 #pragma region Octree Creation / Destruction
-// creates 8 octant children for this octant
+// creates 8 octant children for this octant	// SETS DIMENSIONALITY OF EACH ENTITIY USING ENTITY MANAGER, MAKE SURE TO CLEAR DIMENSIONS IN AppClassControls.cpp ON KEY PRESSES
 void Octant::Subdivide(void) {}
 
 // Creates a tree through subdivision, with up to the max number of levels
@@ -187,12 +215,36 @@ bool Octant::ContainsMoreThan(uint a_nEntities) {}
 void Octant::AssignIDtoEntity(void) {}
 #pragma endregion
 
-// Deallocates member data
-void Octant::Release(void) {}
+// Deallocates member data // Calls KillBranches (recursive), and so should only really deal with de-allocating root
+void Octant::Release(void) 
+{
+	if (m_pRoot == this) KillBranches();
+
+	m_lChild.clear();
+	m_uChildren = 0;
+	m_v3Size = vector3(0.0f);
+	m_EntityList.clear();
+}
 
 // Allocates member data
 void Octant::Init(void) 
 {
+	m_pRoot = nullptr;
+
+	m_uID = m_uOctantCount;
+	m_uLevel = 0;
+	m_uChildren = 0;
+	for (int i = 0; i < 8; i++) 
+	{
+		m_pChild[i] = nullptr;
+	}
+	m_pParent = nullptr;
+
+	m_v3Min = vector3(0.0f);
+	m_v3Max = vector3(0.0f);
+	m_v3Center = vector3(0.0f);
+	m_v3Size = vector3(0.0f);
+
 	m_pEntityMngr = MyEntityManager::GetInstance();
 	m_pMeshMngr = MeshManager::GetInstance();
 }
