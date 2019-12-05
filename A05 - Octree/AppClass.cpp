@@ -61,7 +61,7 @@ void Application::Display(void)
 	if (m_uOctantID == -1)
 		m_pRoot->Display();
 	else
-		m_pRoot->DisplayDescendants(m_uOctantID);		// SEEMS A "DISPLAY ALL" WOULD BE MORE APPROPRIATE HERE
+		m_pRoot->DisplaySpecified(m_uOctantID);		// SEEMS A "DISPLAY ALL" WOULD BE MORE APPROPRIATE HERE
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();

@@ -92,13 +92,13 @@ public:
 
 #pragma region Display Functions
 	// Displays the specified octant as well as all its children octants //( AM I DISPLAYING ONLY IMMEDIATE CHILDREN, OR ALL DESCENDANTS?)
-	void DisplayDescendants(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
+	void DisplaySpecified(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
 
 	// Displays only the specified octant
 	void Display(vector3 a_v3Color = C_YELLOW);
 
 	// Displays any leaf octants that currently contain entities //(use if you want to cycle through just this type of octant)
-	void DisplayOccupiedLeaves(vector3 a_v3Color = C_YELLOW);
+	void DisplayWholeTree(vector3 a_v3Color = C_YELLOW);
 #pragma endregion
 
 #pragma region Helper Functions
