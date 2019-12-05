@@ -54,7 +54,7 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 // Constructor 2 (For creating all children octants)
 Octant::Octant(vector3 a_v3Center, vector3 a_v3Size)
 {
-	Init();	// calls entitymngr and meshmngr singletons
+	Init();	// calls entitymngr and meshmngr singletons	//CAREFUL, SETS THINGS TO NULL
 	//m_uID = m_uOctantCount; // done in Init
 	m_uOctantCount++;
 
@@ -132,7 +132,6 @@ void Octant::Subdivide(void)
 	if (m_uChildren > 0) return;	// Every time octant subdivides, number of children will increase. We don't want to subdivide an octant that's already subdivided
 	if (m_uLevel >= m_uMaxLevel) return; // Cannot subdivide passed max level
 
-
 	//create 8 octants, specify their relative positions and centers, calculated based on the position and center of this octant. Populate m_pchild with these new octants
 	vector3 tempSize = m_v3Size / 4.0f;
 	vector3 tempCenter = m_v3Center - tempSize;
@@ -163,8 +162,20 @@ void Octant::Subdivide(void)
 
 	m_uChildren = 8;
 
-	//INIT
-	//RECURSIVE SUBDIVIDE
+	// Need to set some values that were reset/set to null when new children were initialized
+	for (int i = 0; i < 8; i++) 
+	{
+		m_pChild[i]->m_pRoot = m_pRoot;
+		m_pChild[i]->m_uLevel = m_uLevel + 1;
+
+		m_pChild[i]->m_pParent = this;
+
+		// CHECK IF THIS CHILD CONTAINS ANY ENTITIES
+		// UPDATE ENTITIY COUNT ACCORDINGLY
+
+		// Subdivide again if necessary
+		if (m_pChild[i]->ContainsMoreThan(m_uIdealEntityCount)) m_pChild[i]->Subdivide();
+	}
 }
 
 // Creates a tree through subdivision, with up to the max number of levels
@@ -205,7 +216,10 @@ void Octant::KillBranches(void)
 	{
 		m_pChild[i]->KillBranches();
 		SafeDelete(m_pChild[i]);
+		m_pChild[i] = nullptr;
 	}
+
+	m_uChildren = 0;
 }
 #pragma endregion
 
@@ -256,7 +270,17 @@ void Octant::DisplayWholeTree(vector3 a_v3Color = C_YELLOW)
 
 #pragma region Helper Functions
 // Checks if the specified entity is contained by this octant
-bool Octant::IsContained(uint a_uRBIndex) {}
+bool Octant::IsContained(uint a_uRBIndex) 
+{
+	//ARBB
+}
+
+// Checks if this octant has more than the specified number of entities
+bool Octant::ContainsMoreThan(uint a_nEntities)
+{
+	// USES IsContained(uint)
+	//for all entities in the entitymngr, is its contained by this octant increase a temp count. If this temp count is greater than a_nEntities, return true, else false.
+}
 
 // Checks if this octant contains no child octants
 bool Octant::IsLeaf(void)
@@ -265,9 +289,6 @@ bool Octant::IsLeaf(void)
 		return true;
 	return false;
 }
-
-// Checks if this octant has more than the specified number of entities
-bool Octant::ContainsMoreThan(uint a_nEntities) {}
 
 // Assigns IDs to entities contained by leaf nodes
 void Octant::AssignIDtoEntity(void) {}
