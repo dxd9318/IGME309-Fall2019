@@ -132,7 +132,15 @@ void Simplex::MyCamera::SetPositionTargetAndUpward(vector3 a_v3Position, vector3
 void Simplex::MyCamera::CalculateViewMatrix(void)
 {
 	//Calculate the look at most of your assignment will be reflected in this method
-	m_m4View = glm::lookAt(m_v3Position, m_v3Target, glm::normalize(m_v3Above - m_v3Position)); //position, target, upward
+	
+	m_v3Target = m_v3Position + glm::mat3(glm::yawPitchRoll(m_vEulerOrientation.y, m_vEulerOrientation.x, m_vEulerOrientation.z)) * vector3(0.0f, 0.0f, -1.0f);
+
+	m_m4View = glm::lookAt(m_v3Position, m_v3Target, glm::mat3(glm::yawPitchRoll(m_vEulerOrientation.y, m_vEulerOrientation.x, m_vEulerOrientation.z)) * vector3(0.0f, 1.0f, 0.0f) /* glm::normalize(m_v3Above - m_v3Position)*/); //position, target, upward
+	/*qCameraOrientation = glm::quat(m_vEulerOrientation);
+	m_m4View = m_m4View * glm::toMat4(qCameraOrientation);*/
+
+
+	//yawPitchRoll(angleY, angleX, 0)
 }
 
 void Simplex::MyCamera::CalculateProjectionMatrix(void)
@@ -152,11 +160,38 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	m_v3Position += glm::mat3(glm::yawPitchRoll(m_vEulerOrientation.y, m_vEulerOrientation.x, m_vEulerOrientation.z)) * vector3(0.0f, 0.0f, -a_fDistance);
+	/*m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
+	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);*/
+
+	CalculateProjectionMatrix();
+	CalculateViewMatrix();
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+void MyCamera::MoveVertical(float a_fDistance) 
+{	
+	m_v3Position += vector3(0.0f, a_fDistance, 0.0f);
+	//m_v3Target += vector3(0.0f, a_fDistance, 0.0f);
+	//m_v3Above += vector3(0.0f, a_fDistance, 0.0f);
+
+	CalculateProjectionMatrix();
+	CalculateViewMatrix();
+
+} //Needs to be defined
+
+void MyCamera::MoveSideways(float a_fDistance) 
+{
+	m_v3Position += glm::mat3(glm::yawPitchRoll(m_vEulerOrientation.y, m_vEulerOrientation.x, m_vEulerOrientation.z)) * vector3(a_fDistance, 0.0f, 0.0f);
+	/*m_v3Target += vector3(a_fDistance, 0.0f, 0.0f);
+	m_v3Above += vector3(a_fDistance, 0.0f, 0.0f);*/
+
+	CalculateProjectionMatrix();
+	CalculateViewMatrix();
+
+} //Needs to be defined
+
+void MyCamera::Rotate(float xAngle, float yAngle) 
+{
+	m_vEulerOrientation.x -= xAngle;	//subtract to move right when dragging right-click to the right, and left when dragging left
+	m_vEulerOrientation.y += yAngle;	//add to move up when dragging right-click up, and down when dragging down
+}

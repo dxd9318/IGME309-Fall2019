@@ -26,6 +26,9 @@ class MyCamera
 	vector2 m_v2Horizontal = vector2(-5.0f, 5.0f); //Orthographic horizontal projection
 	vector2 m_v2Vertical = vector2(-5.0f, 5.0f); //Orthographic vertical projection
 
+	vector3 m_vEulerOrientation = vector3(0.0f, 0.0f, 0.0f);
+	glm::quat qCameraOrientation = IDENTITY_QUAT;
+
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
 public:
@@ -230,6 +233,8 @@ public:
 	OUTPUT: ---
 	*/
 	void MoveSideways(float a_fDistance = 0.1f);
+
+	void Rotate(float xAngle, float yAngle);
 };
 
 } //namespace Simplex
