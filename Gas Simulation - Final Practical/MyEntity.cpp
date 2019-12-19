@@ -103,6 +103,24 @@ void Simplex::MyEntity::Release(void)
 	m_IDMap.erase(m_sUniqueID);
 }
 //The big 3
+//Simplex::MyEntity::MyEntity(String a_sUniqueID) 
+//{
+//	Init();
+//
+//	//m_pMeshMngr->AddWireCubeToRenderList();
+//	// CREATE NEW MODEL THATS JUST A CUBE
+//	m_pModel = new Model();
+//	//m_pModel.
+//
+//	GenUniqueID(a_sUniqueID);
+//	m_sUniqueID = a_sUniqueID;
+//	m_IDMap[a_sUniqueID] = this;
+//	m_pRigidBody = new MyRigidBody(m_pModel->GetVertexList()); //generate a rigid body
+//	m_bInMemory = true; //mark this entity as viable
+//
+//	// WILL HAVE TO CHANGE PHYSICS FOR THIS
+//	m_pSolver = new MySolver();
+//}
 Simplex::MyEntity::MyEntity(String a_sFileName, String a_sUniqueID)
 {
 	Init();

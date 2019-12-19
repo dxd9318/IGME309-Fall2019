@@ -36,6 +36,15 @@ public:
 	OUTPUT: index from the list of entities, -1 if not found
 	*/
 	int GetEntityIndex(String a_sUniqueID);
+
+	/*
+	USAGE: Will add an entity to the list, for adding entities without using files
+	ARGUMENTS:
+	-	String a_sUniqueID -> Name wanted as identifier, if not available will generate one
+	OUTPUT: ---
+	*/
+	//void AddEntity(String a_sUniqueID);
+
 	/*
 	USAGE: Will add an entity to the list
 	ARGUMENTS:

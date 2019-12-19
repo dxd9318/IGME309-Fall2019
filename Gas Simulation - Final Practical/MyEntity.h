@@ -34,6 +34,14 @@ class MyEntity
 
 public:
 	/*
+	Usage: Constructor that specifies the name attached to the MyEntity, FOR CREATING ENTITIES WITHOUT FILES
+	Arguments:
+	-	String a_sUniqueID -> Name wanted as identifier, if not available will generate one
+	Output: class object instance
+	*/
+	//MyEntity(String a_sUniqueID);
+
+	/*
 	Usage: Constructor that specifies the name attached to the MyEntity
 	Arguments:
 	-	String a_sFileName -> Name of the model to load

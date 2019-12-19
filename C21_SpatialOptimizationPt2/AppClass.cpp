@@ -71,7 +71,7 @@ void Application::Display(void)
 
 	//display octree
 	if (m_uOctantID == -1)
-		m_pRoot->DisplayOne();
+		m_pRoot->Display();
 	else
 		m_pRoot->Display(m_uOctantID);
 	
